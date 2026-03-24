@@ -1,6 +1,6 @@
 package com.example.x5tech.feature.cardform.domain
 
-class FormatCardNumberUseCase {
+internal class FormatCardNumberUseCase {
 
     operator fun invoke(input: String): String {
         val digits = input

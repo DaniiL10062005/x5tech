@@ -1,6 +1,6 @@
 package com.example.x5tech.feature.cardform.domain
 
-class DetectBankByBinUseCase {
+internal class DetectBankByBinUseCase {
 
     operator fun invoke(input: String): String? {
         val digits = input.filter(Char::isDigit)

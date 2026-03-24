@@ -3,7 +3,7 @@ package com.example.x5tech.feature.cardform
 import com.example.x5tech.model.domain.CardType
 import com.example.x5tech.model.domain.CardValidationResult
 
-data class BankCardFormState(
+internal data class BankCardFormState(
     val cardNumber: String = "",
     val holderName: String = "",
     val expiryDate: String = "",

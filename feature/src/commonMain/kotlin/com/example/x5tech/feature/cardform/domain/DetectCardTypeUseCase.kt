@@ -2,7 +2,7 @@ package com.example.x5tech.feature.cardform.domain
 
 import com.example.x5tech.model.domain.CardType
 
-class DetectCardTypeUseCase {
+internal class DetectCardTypeUseCase {
 
     operator fun invoke(input: String): CardType {
         val digits = input.filter(Char::isDigit)

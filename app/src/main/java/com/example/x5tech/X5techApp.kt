@@ -7,7 +7,7 @@ import com.example.x5tech.feature.cardform.domain.CurrentDateProvider
 import org.koin.core.context.startKoin
 import java.util.Calendar
 
-class X5techApp : Application() {
+internal class X5techApp : Application() {
 
     override fun onCreate() {
         super.onCreate()

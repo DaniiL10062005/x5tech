@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class BankCardFormViewModel(
+class BankCardFormViewModel internal constructor(
     private val formatCardNumberUseCase: FormatCardNumberUseCase,
     private val validateCardNumberUseCase: ValidateCardNumberUseCase,
     private val validateExpiryDateUseCase: ValidateExpiryDateUseCase,
@@ -33,41 +33,41 @@ class BankCardFormViewModel(
 ) : KmpViewModel(coroutineScope = coroutineScope) {
 
     private val mutableState = MutableStateFlow(BankCardFormState())
-    val state: StateFlow<BankCardFormState> = mutableState.asStateFlow()
+    internal val state: StateFlow<BankCardFormState> = mutableState.asStateFlow()
 
     private var rawCardNumber: String = ""
     private var rawHolderName: String = ""
     private var rawExpiryDate: String = ""
     private var rawCvv: String = ""
 
-    fun onCardNumberChanged(input: String) {
+    internal fun onCardNumberChanged(input: String) {
         rawCardNumber = input.filter(Char::isDigit).take(CARD_NUMBER_LENGTH)
         updateState()
     }
 
-    fun onHolderNameChanged(input: String) {
+    internal fun onHolderNameChanged(input: String) {
         rawHolderName = formatHolderName(input)
         updateState()
     }
 
-    fun onExpiryDateChanged(input: String) {
+    internal fun onExpiryDateChanged(input: String) {
         rawExpiryDate = formatExpiryDate(input)
         updateState()
     }
 
-    fun onCvvChanged(input: String) {
+    internal fun onCvvChanged(input: String) {
         rawCvv = input.filter(Char::isDigit).take(CVV_LENGTH)
         updateState()
     }
 
-    fun onMaskToggled() {
+    internal fun onMaskToggled() {
         mutableState.update { currentState ->
             currentState.copy(isMasked = !currentState.isMasked)
         }
         updateState()
     }
 
-    fun onSaveClicked() {
+    internal fun onSaveClicked() {
         updateState()
         val currentState = state.value
         if (!currentState.isSaveEnabled || currentState.isSaving) {

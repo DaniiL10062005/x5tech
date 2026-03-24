@@ -3,7 +3,7 @@ package com.example.x5tech.feature.cardform.domain
 import com.example.x5tech.model.domain.CardValidationError
 import com.example.x5tech.model.domain.CardValidationResult
 
-class ValidateCardNumberUseCase {
+internal class ValidateCardNumberUseCase {
 
     operator fun invoke(input: String): CardValidationResult {
         if (input.any { !it.isDigit() && !it.isWhitespace() }) {

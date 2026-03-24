@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 
-open class KmpViewModel(
+open class KmpViewModel internal constructor(
     coroutineScope: CoroutineScope? = null,
 ) {
 
@@ -13,7 +13,7 @@ open class KmpViewModel(
         context = SupervisorJob() + Dispatchers.Default,
     )
 
-    fun clear() {
+    internal fun clear() {
         viewModelScope.cancel()
     }
 }

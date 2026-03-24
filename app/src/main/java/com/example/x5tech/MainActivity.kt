@@ -13,7 +13,7 @@ import com.example.x5tech.feature.cardform.BankCardFormViewModel
 import com.example.x5tech.ui.theme.X5techTheme
 import org.koin.core.context.GlobalContext
 
-class MainActivity : ComponentActivity() {
+internal class MainActivity : ComponentActivity() {
 
     private val viewModel: BankCardFormViewModel by lazy {
         GlobalContext.get().get()

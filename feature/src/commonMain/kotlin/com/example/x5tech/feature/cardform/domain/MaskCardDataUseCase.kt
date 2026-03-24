@@ -1,6 +1,6 @@
 package com.example.x5tech.feature.cardform.domain
 
-class MaskCardDataUseCase {
+internal class MaskCardDataUseCase {
 
     fun maskCardNumber(input: String): String {
         val digits = input.filter(Char::isDigit)

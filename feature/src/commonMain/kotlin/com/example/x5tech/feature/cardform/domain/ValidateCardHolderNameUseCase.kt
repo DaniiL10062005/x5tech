@@ -3,7 +3,7 @@ package com.example.x5tech.feature.cardform.domain
 import com.example.x5tech.model.domain.CardValidationError
 import com.example.x5tech.model.domain.CardValidationResult
 
-class ValidateCardHolderNameUseCase(
+internal class ValidateCardHolderNameUseCase(
     private val formatCardHolderNameUseCase: FormatCardHolderNameUseCase = FormatCardHolderNameUseCase(),
 ) {
 

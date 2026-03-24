@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.example.x5tech.model.domain.CardType
 
 @Composable
-fun CardVisual(
+internal fun CardVisual(
     cardType: CardType,
     bankName: String?,
     cardNumber: String,
