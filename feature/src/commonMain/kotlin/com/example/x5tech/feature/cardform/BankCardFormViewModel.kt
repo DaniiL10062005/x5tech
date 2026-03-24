@@ -89,8 +89,7 @@ class BankCardFormViewModel(
                     card = BankCard(
                         number = rawCardNumber,
                         holderName = rawHolderName,
-                        expirationMonth = rawExpiryDate.take(MONTH_LENGTH),
-                        expirationYear = rawExpiryDate.takeLast(YEAR_LENGTH),
+                        expiryDate = rawExpiryDate,
                         cvv = rawCvv,
                         type = detectCardTypeUseCase(rawCardNumber),
                     ),
@@ -200,7 +199,6 @@ class BankCardFormViewModel(
         const val CARD_NUMBER_LENGTH = 16
         const val CVV_LENGTH = 3
         const val MONTH_LENGTH = 2
-        const val YEAR_LENGTH = 2
         const val EXPIRY_DATE_DIGITS_LENGTH = 4
         const val SINGLE_SPACE = " "
         const val DEFAULT_SAVE_ERROR_MESSAGE = "Failed to save card"
