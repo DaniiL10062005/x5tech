@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.android.kmp.library)
 }
 
@@ -21,6 +22,11 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+            implementation(libs.ktor.client.core)
+            implementation(libs.kotlinx.serialization.json)
+        }
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

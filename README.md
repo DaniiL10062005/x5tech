@@ -262,13 +262,15 @@ gradlew.bat test
 - [x] Подключить Compose / Compose Multiplatform
 - [x] Подключить Koin
 - [x] Подключить Kotlinx Coroutines
-- [ ] Подключить Kotlinx Serialization
-- [ ] Подключить Ktor Client
+- [x] Подключить Kotlinx Serialization
+- [x] Подключить Ktor Client
 - [x] Подключить Kotlin Test / JUnit для тестов
 
 Примечание:
-- `Kotlinx Serialization` и `Ktor Client` сознательно не добавлены в runtime-реализацию текущей версии, так как
+- `Ktor Client` подключен как зависимость проекта, но в runtime-реализации пока не используется, так как
   используется `FakeCardRepository` и в задаче нет реального backend-контура.
+- `Kotlinx Serialization` подключен как зависимость проекта, но `@Serializable` DTO пока не добавлялись, так как
+  в текущей версии нет реального network/data слоя.
 
 #### 1.3. Настроить quality tools
 - [x] Подключить Detekt
