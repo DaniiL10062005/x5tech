@@ -7,6 +7,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,20 +15,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.x5tech.model.domain.CardType
 
 @Composable
@@ -44,28 +49,45 @@ internal fun CardVisual(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(28.dp))
+            .shadow(
+                elevation = 24.dp,
+                shape = RoundedCornerShape(34.dp),
+                ambientColor = Color(0x33111A25),
+                spotColor = Color(0x33111A25),
+            )
+            .clip(RoundedCornerShape(34.dp))
             .background(cardBackgroundBrush(cardType))
-            .padding(22.dp),
+            .padding(24.dp),
     ) {
+        CardDecorations()
+
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            verticalArrangement = Arrangement.spacedBy(22.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top,
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(99.dp),
+                        color = Color.White.copy(alpha = 0.14f),
+                    ) {
+                        Text(
+                            text = bankName ?: "Digital wallet",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Color.White.copy(alpha = 0.88f),
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        )
+                    }
+
                     Text(
-                        text = bankName ?: "Bank Card",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = Color.White.copy(alpha = 0.76f),
-                    )
-                    Text(
-                        text = cardTypeLabel(cardType),
-                        style = MaterialTheme.typography.titleLarge,
+                        text = "Premium card",
+                        style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                     )
@@ -73,56 +95,108 @@ internal fun CardVisual(
 
                 Column(
                     horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     CardBrandMark(cardType = cardType)
-                    Text(
-                        text = if (isMasked) "Protected mode" else "Preview mode",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White.copy(alpha = 0.7f),
-                    )
+                    Surface(
+                        shape = RoundedCornerShape(99.dp),
+                        color = Color.Black.copy(alpha = 0.18f),
+                    ) {
+                        Text(
+                            text = if (isMasked) "Protected" else "Live preview",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White.copy(alpha = 0.9f),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
-
-            AnimatedCardText(
-                text = displayValue(
-                    value = cardNumber,
-                    fallback = "0000 0000 0000 0000",
-                ),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.SemiBold,
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                CardMetaBlock(
-                    label = "Cardholder",
-                    value = displayValue(
-                        value = holderName,
-                        fallback = "YOUR NAME",
+                Text(
+                    text = "Card number",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White.copy(alpha = 0.72f),
+                )
+                AnimatedCardText(
+                    text = displayValue(
+                        value = cardNumber,
+                        fallback = "0000 0000 0000 0000",
                     ),
-                    modifier = Modifier.weight(1.2f),
+                    style = MaterialTheme.typography.headlineMedium.copy(letterSpacing = 1.2.sp),
+                    fontWeight = FontWeight.SemiBold,
                 )
-                CardMetaBlock(
-                    label = "Expires",
-                    value = displayValue(
-                        value = expiryDate,
-                        fallback = "MM/YY",
-                    ),
-                    modifier = Modifier.weight(0.8f),
-                )
-                CardMetaBlock(
-                    label = "CVV",
-                    value = "•••",
-                    modifier = Modifier.weight(0.55f),
-                )
+            }
+
+            Surface(
+                shape = RoundedCornerShape(26.dp),
+                color = Color.White.copy(alpha = 0.12f),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 15.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    CardMetaBlock(
+                        label = "Cardholder",
+                        value = displayValue(
+                            value = holderName,
+                            fallback = "YOUR NAME",
+                        ),
+                        modifier = Modifier.weight(1.15f),
+                    )
+                    CardMetaBlock(
+                        label = "Expires",
+                        value = displayValue(
+                            value = expiryDate,
+                            fallback = "MM/YY",
+                        ),
+                        modifier = Modifier.weight(0.7f),
+                    )
+                    CardMetaBlock(
+                        label = "CVV",
+                        value = "***",
+                        modifier = Modifier.weight(0.45f),
+                    )
+                }
             }
         }
     }
+}
+
+@Composable
+private fun BoxScope.CardDecorations() {
+    Box(
+        modifier = Modifier
+            .align(Alignment.TopEnd)
+            .size(148.dp)
+            .clip(CircleShape)
+            .background(
+                Brush.radialGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.28f),
+                        Color.Transparent,
+                    ),
+                ),
+            ),
+    )
+    Box(
+        modifier = Modifier
+            .align(Alignment.BottomStart)
+            .size(width = 180.dp, height = 96.dp)
+            .clip(RoundedCornerShape(topEnd = 96.dp, bottomEnd = 96.dp))
+            .background(
+                Brush.horizontalGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.14f),
+                        Color.Transparent,
+                    ),
+                ),
+            ),
+    )
 }
 
 @Composable
@@ -178,7 +252,6 @@ private fun AnimatedCardText(
 @Composable
 private fun CardBrandMark(cardType: CardType) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy((-10).dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -187,19 +260,19 @@ private fun CardBrandMark(cardType: CardType) {
                 .clip(CircleShape)
                 .background(Color.White.copy(alpha = 0.82f)),
         )
-        Box(
-            modifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-                .background(
-                    when (cardType) {
-                        CardType.VISA -> Color(0xFF8FD3FF)
-                        CardType.MASTERCARD -> Color(0xFFFFB66B)
-                        CardType.MIR -> Color(0xFF8CE4B0)
-                        CardType.UNKNOWN -> Color.White.copy(alpha = 0.38f)
-                    },
-                ),
-        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Surface(
+            shape = RoundedCornerShape(99.dp),
+            color = brandTint(cardType).copy(alpha = 0.9f),
+        ) {
+            Text(
+                text = cardTypeLabel(cardType),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF0D1320),
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            )
+        }
     }
 }
 
@@ -210,12 +283,21 @@ private fun displayValue(
     return value.ifBlank { fallback }
 }
 
+private fun brandTint(cardType: CardType): Color {
+    return when (cardType) {
+        CardType.VISA -> Color(0xFF8FD3FF)
+        CardType.MASTERCARD -> Color(0xFFFFB66B)
+        CardType.MIR -> Color(0xFF8CE4B0)
+        CardType.UNKNOWN -> Color(0xFFD8DEE7)
+    }
+}
+
 private fun cardTypeLabel(cardType: CardType): String {
     return when (cardType) {
         CardType.VISA -> "VISA"
         CardType.MASTERCARD -> "MASTERCARD"
         CardType.MIR -> "MIR"
-        CardType.UNKNOWN -> "UNKNOWN"
+        CardType.UNKNOWN -> "AUTO"
     }
 }
 
@@ -223,30 +305,30 @@ private fun cardBackgroundBrush(cardType: CardType): Brush {
     return when (cardType) {
         CardType.VISA -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF0B2542),
-                Color(0xFF194C7F),
-                Color(0xFF4278A8),
+                Color(0xFF0B1730),
+                Color(0xFF163B74),
+                Color(0xFF33A0C8),
             ),
         )
         CardType.MASTERCARD -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF291A15),
-                Color(0xFF75411F),
-                Color(0xFFB6652C),
+                Color(0xFF22120E),
+                Color(0xFF6B2D14),
+                Color(0xFFC96C2A),
             ),
         )
         CardType.MIR -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF10372A),
-                Color(0xFF1D6A4C),
-                Color(0xFF2FA26F),
+                Color(0xFF0E281F),
+                Color(0xFF175943),
+                Color(0xFF2CA86E),
             ),
         )
         CardType.UNKNOWN -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF1D2430),
-                Color(0xFF435166),
-                Color(0xFF6B798B),
+                Color(0xFF161E2A),
+                Color(0xFF344356),
+                Color(0xFF667487),
             ),
         )
     }

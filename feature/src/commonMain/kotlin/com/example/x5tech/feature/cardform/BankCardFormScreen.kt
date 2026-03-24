@@ -9,13 +9,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -72,21 +75,23 @@ internal fun BankCardFormScreen(
         modifier = modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
+                brush = Brush.linearGradient(
                     colors = listOf(
-                        Color(0xFFF7F3EC),
-                        Color(0xFFE7EEF5),
-                        Color(0xFFF7F3EC),
+                        Color(0xFFF9F1E6),
+                        Color(0xFFE9EEF7),
+                        Color(0xFFF7F4EF),
                     ),
                 ),
             ),
     ) {
+        AmbientBackdrop()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 18.dp, vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
             HeaderBlock(
                 cardType = state.cardType,
@@ -104,25 +109,16 @@ internal fun BankCardFormScreen(
             )
 
             Surface(
-                shape = RoundedCornerShape(28.dp),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 2.dp,
-                shadowElevation = 10.dp,
+                shape = RoundedCornerShape(32.dp),
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.96f),
+                tonalElevation = 4.dp,
+                shadowElevation = 16.dp,
             ) {
                 Column(
                     modifier = Modifier.padding(horizontal = 18.dp, vertical = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    Text(
-                        text = "Card details",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Text(
-                        text = "Enter the card information below. The form validates input as you type.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    FormHeader()
 
                     CardInputField(
                         label = "Card number",
@@ -131,6 +127,7 @@ internal fun BankCardFormScreen(
                         isError = state.cardNumberValidationResult is CardValidationResult.Invalid,
                         errorText = state.cardNumberValidationResult.toErrorText(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        placeholder = "1234 5678 9012 3456",
                     )
 
                     CardInputField(
@@ -140,6 +137,7 @@ internal fun BankCardFormScreen(
                         isError = state.holderNameValidationResult is CardValidationResult.Invalid,
                         errorText = state.holderNameValidationResult.toErrorText(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        placeholder = "JANE DOE",
                     )
 
                     Row(
@@ -154,6 +152,7 @@ internal fun BankCardFormScreen(
                             errorText = state.expiryDateValidationResult.toErrorText(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.weight(1f),
+                            placeholder = "MM/YY",
                         )
                         CardInputField(
                             label = "CVV",
@@ -166,6 +165,7 @@ internal fun BankCardFormScreen(
                             ),
                             modifier = Modifier.weight(0.75f),
                             visualTransformation = PasswordVisualTransformation(),
+                            placeholder = "***",
                         )
                     }
 
@@ -195,18 +195,26 @@ internal fun BankCardFormScreen(
                         enabled = state.isSaveEnabled && !state.isSaving,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(54.dp),
+                            .height(58.dp),
+                        shape = RoundedCornerShape(22.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF173A63),
+                            contentColor = Color.White,
+                            disabledContainerColor = Color(0xFFB8C4D1),
+                            disabledContentColor = Color.White.copy(alpha = 0.78f),
+                        ),
                     ) {
                         if (state.isSaving) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(18.dp),
                                 strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = Color.White,
                             )
                         } else {
                             Text(
-                                text = "Save card",
+                                text = "Save securely",
                                 style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
                             )
                         }
                     }
@@ -217,28 +225,113 @@ internal fun BankCardFormScreen(
 }
 
 @Composable
+private fun AmbientBackdrop() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 56.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(x = 64.dp, y = (-24).dp)
+                .size(220.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color(0x55A7D8EE),
+                            Color.Transparent,
+                        ),
+                    ),
+                    shape = CircleShape,
+                ),
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .offset(x = (-80).dp, y = 50.dp)
+                .size(180.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color(0x44F2BF8A),
+                            Color.Transparent,
+                        ),
+                    ),
+                    shape = CircleShape,
+                ),
+        )
+    }
+}
+
+@Composable
 private fun HeaderBlock(
     cardType: CardType,
     bankName: String?,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        Surface(
+            shape = RoundedCornerShape(99.dp),
+            color = Color.White.copy(alpha = 0.7f),
+        ) {
+            Text(
+                text = "Wallet setup",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF3E566F),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            )
+        }
+
         Text(
-            text = "Bank card form",
+            text = "Add a bank card with live validation",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
         )
+
         Text(
             text = buildString {
                 append(cardTypeTitle(cardType))
                 bankName?.let {
-                    append(" · ")
+                    append(" / ")
                     append(it)
                 }
             },
             style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun FormHeader() {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Surface(
+            shape = RoundedCornerShape(99.dp),
+            color = Color(0xFFEAF0F6),
+        ) {
+            Text(
+                text = "Secure form",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF25486D),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            )
+        }
+
+        Text(
+            text = "Card details",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Text(
+            text = "Designed for quick input, instant feedback, and a cleaner preview state.",
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
@@ -250,27 +343,27 @@ private fun ShowHideSwitch(
     onMaskToggled: () -> Unit,
 ) {
     Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+        shape = RoundedCornerShape(24.dp),
+        color = Color(0xFFF2F6F9),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
                     text = "Hide sensitive data",
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = "Masks card number and cardholder name in the preview.",
+                    text = "Switch between live and protected preview modes.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -321,9 +414,9 @@ private fun CardValidationResult?.toErrorText(): String? {
 
 private fun cardTypeTitle(cardType: CardType): String {
     return when (cardType) {
-        CardType.VISA -> "Visa"
-        CardType.MASTERCARD -> "Mastercard"
-        CardType.MIR -> "Mir"
+        CardType.VISA -> "Visa ready"
+        CardType.MASTERCARD -> "Mastercard ready"
+        CardType.MIR -> "Mir ready"
         CardType.UNKNOWN -> "Card type will be detected automatically"
     }
 }
