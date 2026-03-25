@@ -82,6 +82,18 @@ class BankCardFormViewModel internal constructor(
         updateState()
     }
 
+    internal fun onCancelClicked() {
+        bankLookupJob?.cancel()
+        bankLookupJob = null
+        requestedBin = null
+        resolvedBankName = null
+        rawCardNumber = ""
+        rawHolderName = ""
+        rawExpiryDate = ""
+        rawCvv = ""
+        mutableState.value = BankCardFormState()
+    }
+
     internal fun onSaveClicked() {
         updateState()
         val currentState = state.value

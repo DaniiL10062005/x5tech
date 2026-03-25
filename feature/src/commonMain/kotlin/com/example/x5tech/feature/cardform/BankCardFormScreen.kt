@@ -65,6 +65,7 @@ fun BankCardFormScreen(
         onCvvChanged = viewModel::onCvvChanged,
         onMaskToggled = viewModel::onMaskToggled,
         onSaveClicked = viewModel::onSaveClicked,
+        onCancelClicked = viewModel::onCancelClicked,
         modifier = modifier,
     )
 }
@@ -78,6 +79,7 @@ internal fun BankCardFormScreen(
     onCvvChanged: (String) -> Unit,
     onMaskToggled: () -> Unit,
     onSaveClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expiryDateFieldValue by remember {
@@ -232,32 +234,51 @@ internal fun BankCardFormScreen(
                         )
                     }
 
-                    Button(
-                        onClick = onSaveClicked,
-                        enabled = state.isSaveEnabled && !state.isSaving,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(58.dp),
-                        shape = RoundedCornerShape(22.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF173A63),
-                            contentColor = Color.White,
-                            disabledContainerColor = Color(0xFFB8C4D1),
-                            disabledContentColor = Color.White.copy(alpha = 0.78f),
-                        ),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        if (state.isSaving) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(18.dp),
-                                strokeWidth = 2.dp,
-                                color = Color.White,
-                            )
-                        } else {
+                        androidx.compose.material3.OutlinedButton(
+                            onClick = onCancelClicked,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(58.dp),
+                            shape = RoundedCornerShape(22.dp),
+                        ) {
                             Text(
-                                text = stringResource(Res.string.card_form_save_action),
+                                text = stringResource(Res.string.card_form_cancel_action),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                             )
+                        }
+
+                        Button(
+                            onClick = onSaveClicked,
+                            enabled = state.isSaveEnabled && !state.isSaving,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(58.dp),
+                            shape = RoundedCornerShape(22.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF173A63),
+                                contentColor = Color.White,
+                                disabledContainerColor = Color(0xFFB8C4D1),
+                                disabledContentColor = Color.White.copy(alpha = 0.78f),
+                            ),
+                        ) {
+                            if (state.isSaving) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(18.dp),
+                                    strokeWidth = 2.dp,
+                                    color = Color.White,
+                                )
+                            } else {
+                                Text(
+                                    text = stringResource(Res.string.card_form_save_action),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                            }
                         }
                     }
                 }

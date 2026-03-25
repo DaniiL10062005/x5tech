@@ -113,6 +113,10 @@
 
 - `5536 9138 1256 8539`
 
+**ВТБ**
+
+- `4893 4702 2007 1135`
+
 ### Использование Ktor Client и Kotlinx Serialization
 
 `Ktor Client` и `Kotlinx Serialization` используются в runtime-логике для lookup банка по BIN.
@@ -239,29 +243,17 @@ gradlew.bat :model:allTests
 
 ## Скриншоты
 
-Скриншоты будут добавлены позже.
-
-### Form Screen
-
-![Form Screen](./docs/screenshots/form-screen.png)
-
-### Masked Mode
-
-![Masked Mode](./docs/screenshots/masked-mode.png)
-
-### Validation Errors
-
-![Validation Errors](./docs/screenshots/validation-errors.png)
+Скриншоты находятся в папке docs/screenchots
 
 ## Видео
 
 Демо-видео:
-[Ссылка на видео](PASTE_VIDEO_LINK_HERE)
+[Ссылка на видео](https://youtube.com/shorts/sTslrK-pmDY?feature=share)
 
 ## APK
 
 Скачать APK:
-[Ссылка на APK](PASTE_APK_LINK_HERE)
+[Ссылка на APK](https://github.com/DaniiL10062005/x5tech/releases/tag/v1.0)
 
 ## Использованные ИИ-инструменты
 

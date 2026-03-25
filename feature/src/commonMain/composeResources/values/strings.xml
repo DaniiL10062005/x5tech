@@ -17,6 +17,7 @@
     <string name="card_form_mask_description">Switch between live and protected preview modes.</string>
     <string name="card_form_saved_success">Card saved successfully</string>
     <string name="card_form_save_action">Save securely</string>
+    <string name="card_form_cancel_action">Cancel</string>
     <string name="card_form_error_empty_number">Enter the card number</string>
     <string name="card_form_error_invalid_number">Enter a valid card number</string>
     <string name="card_form_error_empty_holder_name">Enter the cardholder name</string>
