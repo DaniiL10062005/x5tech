@@ -72,6 +72,7 @@ internal fun CardVisual(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(
+                    modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     AnimatedCardText(
@@ -92,6 +93,8 @@ internal fun CardVisual(
                         color = Color.White.copy(alpha = 0.76f),
                     )
                 }
+
+                Spacer(modifier = Modifier.width(16.dp))
 
                 CardBrandMark(cardType = cardType)
             }
