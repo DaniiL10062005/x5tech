@@ -9,6 +9,7 @@
 подхода MVVM.
 
 Форма поддерживает:
+
 - ввод номера карты;
 - ввод имени держателя;
 - ввод срока действия;
@@ -22,6 +23,7 @@
 ## Реализованный функционал
 
 Реализовано:
+
 - форма ввода банковской карты;
 - `MVVM` с `StateFlow`;
 - визуальное отображение карты с данными;
@@ -73,12 +75,14 @@
   - тесты `ViewModel`.
 
 Подход:
+
 - UI не содержит бизнес-валидации;
 - `ViewModel` управляет состоянием формы и координирует use cases;
 - логика форматирования, маскирования и проверки вынесена в отдельные use cases;
 - зависимости передаются через конструктор и Koin.
 
 Поток данных:
+
 - пользовательское действие из UI;
 - вызов метода `ViewModel`;
 - форматирование / валидация / определение типа карты;
@@ -101,18 +105,20 @@
 ## Примеры номеров карт
 
 **СБЕР:**
+
 - `5469 6700 2659 6588`
 - `2202 2008 7479 9834`
 
 **Т-банк:**
-- `5536 9138 1256 8539`
 
+- `5536 9138 1256 8539`
 
 ### Использование Ktor Client и Kotlinx Serialization
 
 `Ktor Client` и `Kotlinx Serialization` используются в runtime-логике для lookup банка по BIN.
 
 Как это устроено:
+
 - `BinlistCardRepository` делает `GET` запрос на `https://lookup.binlist.net/{bin}`;
 - `Ktor Client` настроен с `ContentNegotiation`;
 - ответ десериализуется через `Kotlinx Serialization` в `@Serializable` DTO;
@@ -120,6 +126,7 @@
   локальный fallback `LocalBankByBinResolver`.
 
 Почему это решение выбрано:
+
 - требование задания по `Ktor Client` и `Kotlinx Serialization` закрыто реальной интеграцией, а не только зависимостями;
 - lookup по BIN остаётся изолирован внутри репозитория и не протекает в UI-слой;
 - локальный fallback делает поведение устойчивее, потому что бесплатный `binlist.net` иногда не возвращает имя банка.
@@ -147,6 +154,7 @@ root
 Основные файлы:
 
 ### model
+
 - `domain/BankCard.kt`
 - `domain/CardType.kt`
 - `domain/CardValidationResult.kt`
@@ -156,6 +164,7 @@ root
 - `repository/LocalBankByBinResolver.kt`
 
 ### feature
+
 - `BankCardFormState.kt`
 - `BankCardFormViewModel.kt`
 - `KmpViewModel.kt`
@@ -174,11 +183,13 @@ root
 ## Инструкция по запуску
 
 ### Требования
+
 - JDK 11+
 - Android Studio
 - Android SDK
 
 ### Шаги
+
 1. Клонировать репозиторий.
 2. Открыть проект в Android Studio.
 3. Убедиться, что настроен `JAVA_HOME`.
@@ -204,6 +215,7 @@ gradlew.bat :model:allTests
 ## Описание тестов
 
 Покрыты:
+
 - форматирование номера карты;
 - валидация номера карты;
 - проверка алгоритма Луна;
@@ -217,6 +229,7 @@ gradlew.bat :model:allTests
 - поведение `BankCardFormViewModel`.
 
 Примеры сценариев:
+
 - кнопка Save активируется только при валидной форме;
 - корректное определение `VISA` и `MASTERCARD`;
 - корректное определение банка по BIN;
@@ -229,12 +242,15 @@ gradlew.bat :model:allTests
 Скриншоты будут добавлены позже.
 
 ### Form Screen
+
 ![Form Screen](./docs/screenshots/form-screen.png)
 
 ### Masked Mode
+
 ![Masked Mode](./docs/screenshots/masked-mode.png)
 
 ### Validation Errors
+
 ![Validation Errors](./docs/screenshots/validation-errors.png)
 
 ## Видео
@@ -251,9 +267,11 @@ gradlew.bat :model:allTests
 
 При выполнении задания использовались ИИ-инструменты как вспомогательный инструмент проектирования и генерации
 чернового кода:
+
 - ChatGPT / Codex
 
 ИИ использовался для:
+
 - проектирования структуры модулей;
 - генерации шаблонов use cases;
 - генерации базовых unit-тестов;
@@ -274,12 +292,14 @@ gradlew.bat :model:allTests
 ### 1. Настроить KMP и зависимости
 
 #### 1.1. Настроить Kotlin Multiplatform
+
 - [x] Включить KMP в корневом проекте
 - [x] Настроить `commonMain`
 - [x] Настроить `commonTest`
 - [x] Настроить Android target для APK
 
 #### 1.2. Подключить зависимости
+
 - [x] Подключить Compose / Compose Multiplatform
 - [x] Подключить Koin
 - [x] Подключить Kotlinx Coroutines
@@ -288,19 +308,23 @@ gradlew.bat :model:allTests
 - [x] Подключить Kotlin Test / JUnit для тестов
 
 Примечание:
+
 - `Ktor Client` используется в `BinlistCardRepository` для запроса к `binlist.net`.
 - `Kotlinx Serialization` используется для десериализации BIN lookup response в `@Serializable` DTO.
 
 #### 1.3. Настроить quality tools
+
 - [x] Подключить Detekt
 - [x] Настроить `max line length = 120`
 - [x] Следить за `trailing commas`
 - [x] Использовать `internal` по умолчанию для всех сущностей
 
 Примечание:
+
 - `public` оставлен только на межмодульных контрактах, которые нужны для взаимодействия `model`, `feature` и `app`.
 
 Готово, если:
+
 - [x] проект собирается
 - [x] зависимости резолвятся
 - [x] можно запускать тесты
@@ -309,6 +333,7 @@ gradlew.bat :model:allTests
 ### 2. Создать модуль `model`
 
 #### 2.1. Создать `model/src/commonMain/domain/BankCard.kt`
+
 - [x] Создать `data class BankCard`
 - [x] Добавить поля `number`
 - [x] Добавить поле `holderName`
@@ -317,9 +342,11 @@ gradlew.bat :model:allTests
 - [x] Добавить поле `cardType`
 
 Готово, если:
+
 - [x] есть единая модель карты для сохранения и передачи данных
 
 #### 2.2. Создать `model/src/commonMain/domain/CardType.kt`
+
 - [x] Создать `enum class CardType`
 - [x] Добавить `VISA`
 - [x] Добавить `MASTERCARD`
@@ -327,31 +354,38 @@ gradlew.bat :model:allTests
 - [x] Добавить `UNKNOWN`
 
 Готово, если:
+
 - [x] тип карты можно вычислить и хранить в состоянии
 
 #### 2.3. Создать `model/src/commonMain/domain/CardValidationResult.kt`
+
 - [x] Создать `sealed class CardValidationResult`
 - [x] Добавить состояние `Valid`
 - [x] Добавить состояние `Invalid`
 
 Примечание:
+
 - Вместо `Invalid(message: String)` используется `Invalid(errors: List<CardValidationError>)`, что удобнее для
   типобезопасной обработки ошибок.
 
 Готово, если:
+
 - [x] любая валидация возвращает либо успех, либо понятную ошибку
 
 #### 2.4. Создать `model/src/commonMain/repository/CardRepository.kt`
+
 - [x] Создать интерфейс репозитория
 - [x] Добавить `suspend fun getBankByBin(bin: String): String?`
 - [x] Добавить `suspend fun saveCard(card: BankCard)`
 
 Готово, если:
+
 - [x] `ViewModel` может вызывать сохранение через абстракцию
 
 ### 3. Создать бизнес-логику в `feature/domain`
 
 #### 3.1. `ValidateCardNumberUseCase.kt`
+
 - [x] Удалять пробелы
 - [x] Проверять, что строка состоит только из цифр
 - [x] Проверять длину `= 16`
@@ -359,78 +393,92 @@ gradlew.bat :model:allTests
 - [x] Возвращать `CardValidationResult`
 
 Проверка готовности:
+
 - [x] валидный `Visa` проходит
 - [x] невалидный номер не проходит
 - [x] буквы не проходят
 - [x] короткий номер не проходит
 
 #### 3.2. `ValidateExpiryDateUseCase.kt`
+
 - [x] Проверять формат `MM/YY`
 - [x] Проверять, что месяц от `01` до `12`
 - [x] Проверять, что карта не истекла
 - [x] Возвращать `CardValidationResult`
 
 Проверка готовности:
+
 - [x] `12/28` проходит
 - [x] `01/20` не проходит
 - [x] `13/25` не проходит
 - [x] `1/25` не проходит при строгом формате
 
 #### 3.3. `ValidateCardHolderNameUseCase.kt`
+
 - [x] Разрешить только латиницу и пробел
 - [x] Требовать минимум 2 символа
 - [x] Приводить имя к `uppercase`
 - [x] Возвращать `CardValidationResult`
 
 Проверка готовности:
+
 - [x] `JOHN DOE` проходит
 - [x] `J` не проходит
 - [x] `ИВАН` не проходит
 - [x] `JOHN1` не проходит
 
 #### 3.4. `ValidateCvvUseCase.kt`
+
 - [x] Проверять, что только цифры
 - [x] Проверять, что длина ровно 3
 - [x] Возвращать `CardValidationResult`
 
 Проверка готовности:
+
 - [x] `123` проходит
 - [x] `12` не проходит
 - [x] `1234` не проходит
 - [x] `12A` не проходит
 
 #### 3.5. `DetectCardTypeUseCase.kt`
+
 - [x] Определять `VISA` по началу `4`
 - [x] Определять `MASTERCARD` по диапазонам `51-55` и `2221-2720`
 - [x] Определять `MIR` по `BIN 2200-2204`
 - [x] Возвращать `UNKNOWN` во всех остальных случаях
 
 Проверка готовности:
+
 - [x] `4111111111111111 -> VISA`
 - [x] `5500000000000004 -> MASTERCARD`
 - [x] `2200000000000004 -> MIR`
 
 #### 3.6. `FormatCardNumberUseCase.kt`
+
 - [x] Удалять всё, кроме цифр
 - [x] Ограничивать до 16 цифр
 - [x] Форматировать как `XXXX XXXX XXXX XXXX`
 
 Проверка готовности:
+
 - [x] `4111111111111111 -> 4111 1111 1111 1111`
 - [x] при вводе букв они игнорируются
 - [x] длинный номер обрезается до 16 цифр
 
 #### 3.7. `MaskCardDataUseCase.kt`
+
 - [x] Для номера карты возвращать замаскированный вид
 - [x] `CVV` всегда скрывать как `•••`
 - [x] Имя скрывать частично
 - [x] Поддержать режим `show/hide`
 
 Инженерное решение:
+
 - [x] Зафиксирован вариант маскирования: показывать первые 6 и последние 4 цифры
 - [x] Выбор отражён в проекте и README
 
 Проверка готовности:
+
 - [x] номер маскируется стабильно
 - [x] `CVV` всегда скрыт
 - [x] имя частично скрыто
@@ -438,6 +486,7 @@ gradlew.bat :model:allTests
 ### 4. Создать состояние формы
 
 #### 4.1. Создать `feature/src/commonMain/BankCardFormState.kt`
+
 - [x] Добавить `cardNumber`
 - [x] Добавить `holderName`
 - [x] Добавить `expiryDate`
@@ -450,14 +499,17 @@ gradlew.bat :model:allTests
 - [x] Добавить `isSaved`
 
 Примечание:
+
 - Вместо отдельных `isCardNumberValid` и `cardNumberError` используются `CardValidationResult?` для каждого поля.
 
 Готово, если:
+
 - [x] весь экран можно отрисовать только на основе `state`
 
 ### 5. Создать ViewModel
 
 #### 5.1. Создать `feature/src/commonMain/BankCardFormViewModel.kt`
+
 - [x] Подключить все `UseCases` через конструктор
 - [x] Хранить состояние в `StateFlow`
 - [x] Сделать `onCardNumberChanged`
@@ -468,6 +520,7 @@ gradlew.bat :model:allTests
 - [x] Сделать `onSaveClicked`
 
 Что происходит внутри:
+
 - [x] При изменении номера выполняются форматирование, валидация и определение типа карты
 - [x] При изменении имени выполняются uppercasing и валидация
 - [x] При изменении срока выполняется валидация
@@ -476,21 +529,25 @@ gradlew.bat :model:allTests
 - [x] При `onSaveClicked` карта сохраняется через репозиторий, если форма валидна
 
 Готово, если:
+
 - [x] вся логика формы живёт во `ViewModel`, а UI только показывает `state`
 
 ### 6. Настроить DI
 
 #### 6.1. Создать `Koin module`
+
 - [x] Зарегистрировать `UseCases`
 - [x] Зарегистрировать `CardRepository`
 - [x] Зарегистрировать `ViewModel`
 
 Готово, если:
+
 - [x] экран собирается через DI без ручного создания зависимостей
 
 ### 7. Собрать UI экрана
 
 #### 7.1. Создать `feature/src/commonMain/BankCardFormScreen.kt`
+
 - [x] Подписаться на `state ViewModel`
 - [x] Разместить визуал карты
 - [x] Разместить поле номера
@@ -501,9 +558,11 @@ gradlew.bat :model:allTests
 - [x] Разместить кнопку `Сохранить`
 
 Готово, если:
+
 - [x] экран покрывает основные функциональные требования формы
 
 #### 7.2. Создать `components/CardInputField.kt`
+
 - [x] Сделать переиспользуемый `Composable` для полей
 - [x] Добавить поддержку `label`
 - [x] Добавить поддержку `error message`
@@ -511,9 +570,11 @@ gradlew.bat :model:allTests
 - [x] Добавить поддержку `keyboard type`
 
 Готово, если:
+
 - [x] однотипные поля не дублируют UI-код
 
 #### 7.3. Создать `components/CardVisual.kt`
+
 - [x] Показать номер карты
 - [x] Показать имя владельца
 - [x] Показать срок действия
@@ -521,11 +582,13 @@ gradlew.bat :model:allTests
 - [x] Учитывать режим скрытия данных
 
 Готово, если:
+
 - [x] есть визуальная карточка, отражающая текущий `state`
 
 ### 8. Реализовать поведение каждого поля
 
 #### 8.1. Поле номера карты
+
 - [x] Разрешить ввод только цифр
 - [x] Форматировать пробелами автоматически
 - [x] Не давать ввести больше 16 цифр
@@ -533,62 +596,77 @@ gradlew.bat :model:allTests
 - [x] Обновлять тип карты
 
 Готово, если:
+
 - [x] номер красиво форматируется и валидируется при вводе
 
 #### 8.2. Поле имени владельца
+
 - [x] Приводить ввод к `uppercase`
 - [x] Разрешать только латиницу и пробел
 - [x] Показывать ошибку при невалидном имени
 
 Готово, если:
+
 - [x] в `state` и UI хранится корректное имя
 
 #### 8.3. Поле срока действия
+
 - [x] Поддержать формат `MM/YY`
 - [x] Делать авто-вставку `/`
 - [x] Показывать ошибку, если срок некорректен или истёк
 
 Готово, если:
+
 - [x] срок отображается в корректном виде и валидируется
 
 #### 8.4. Поле `CVV`
+
 - [x] Разрешать только цифры
 - [x] Ограничивать длину 3
 - [x] Показывать ошибку при неверной длине
 
 Готово, если:
+
 - [x] `CVV` нельзя ввести некорректно
 
 ### 9. Реализовать индикаторы валидности
+
 - [x] У каждого поля показывать состояние ошибки
 - [x] Показывать понятный текст ошибки
 - [x] При валидном значении убирать ошибку
 
 Готово, если:
+
 - [x] пользователь понимает, почему поле невалидно
 
 ### 10. Реализовать режим скрытия данных
 
 #### 10.1. Переключатель
+
 - [x] Добавить `switch` для показа и скрытия данных
 - [x] По клику менять состояние режима маскирования
 
 #### 10.2. Логика отображения
+
 - [x] Если данные видимы, показывать реальные значения
 - [x] Если включено скрытие, показывать masked-значения
 - [x] `CVV` скрывать всегда
 
 Готово, если:
+
 - [x] при переключении карточка меняет отображение данных
 
 ### 11. Добавить анимацию переключения
+
 - [x] Добавить анимацию при переключении `visible/hidden`
 - [x] Использовать `AnimatedContent`
 
 Готово, если:
+
 - [x] переключение визуально не резкое
 
 ### 12. Реализовать кнопку "Сохранить"
+
 - [x] Кнопка неактивна, пока невалидно хотя бы одно поле
 - [x] Кнопка активна, если все поля валидны
 - [x] При нажатии создаётся `BankCard`
@@ -596,49 +674,58 @@ gradlew.bat :model:allTests
 - [x] Показывается успешное сохранение
 
 Готово, если:
+
 - [x] невозможно сохранить некорректную форму
 
 ### 13. Написать unit-тесты
 
 #### 13.1. `ValidateCardNumberUseCaseTest.kt`
+
 - [x] `should validate card number with Luhn algorithm`
 - [x] `should reject invalid card number`
 - [x] `should reject short card number`
 - [x] `should reject card number with letters`
 
 #### 13.2. `DetectCardTypeUseCaseTest.kt`
+
 - [x] `should detect VISA card type`
 - [x] `should detect MASTERCARD card type`
 - [x] `should detect MIR card type`
 - [x] `should return UNKNOWN for unsupported prefix`
 
 #### 13.3. `ValidateExpiryDateUseCaseTest.kt`
+
 - [x] `should validate expiry date not in past`
 - [x] `should reject expired card`
 - [x] `should reject invalid month`
 - [x] `should reject invalid expiry date format`
 
 #### 13.4. `ValidateCardHolderNameUseCaseTest.kt`
+
 - [x] `should validate card holder name format`
 - [x] `should reject Cyrillic card holder name`
 - [x] `should reject card holder name with digits`
 - [x] `should reject too short card holder name`
 
 #### 13.5. `ValidateCvvUseCaseTest.kt`
+
 - [x] `should validate CVV length`
 - [x] `should reject non digit CVV`
 - [x] `should reject short CVV`
 - [x] `should reject long CVV`
 
 #### 13.6. `FormatCardNumberUseCaseTest.kt`
+
 - [x] `should format card number with spaces`
 - [x] `should remove invalid symbols from card number`
 - [x] `should trim card number to 16 digits`
 
 #### 13.7. `MaskCardDataUseCaseTest.kt`
+
 - [x] `should mask card number correctly`
 
 #### 13.8. `BankCardFormViewModelTest.kt`
+
 - [x] `should enable save button only when all fields valid`
 - [x] `should detect VISA card type`
 - [x] `should detect MASTERCARD card type`
@@ -648,16 +735,19 @@ gradlew.bat :model:allTests
 - [x] `should save when form valid`
 
 #### 13.9. `BinlistCardRepositoryTest.kt`
+
 - [x] `should resolve bank name from binlist response`
 - [x] `should fallback to local bank resolver when binlist bank is empty`
 - [x] `should fallback to local bank resolver when request fails`
 - [x] `should return null for invalid bin`
 
 Готово, если:
+
 - [x] ключевые сценарии покрыты тестами
 - [x] тесты зелёные
 
 ### 14. Проверить обязательные сценарии вручную
+
 - [ ] Ввести валидный номер `Visa`
 - [ ] Проверить, что тип карты стал `VISA`
 - [ ] Ввести валидный `Mastercard`
@@ -679,6 +769,7 @@ gradlew.bat :model:allTests
 - [ ] Проверить анимацию
 
 ### 15. Подготовить README
+
 - [x] Добавить название проекта
 - [x] Добавить краткое описание задания
 - [x] Добавить стек
@@ -694,12 +785,14 @@ gradlew.bat :model:allTests
 - [x] Описать инженерные решения по спорным местам задания
 
 Особенно важно:
+
 - [x] Описать, как реализован алгоритм Луна
 - [x] Описать, как определяется тип карты
 - [x] Описать, как реализовано маскирование
 - [x] Описать, почему выбрана такая архитектура
 
 Готово, если:
+
 - [x] README помогает понять, как запускать проект
 - [x] README объясняет, что реализовано
 - [x] README указывает, где смотреть результат
