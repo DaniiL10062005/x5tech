@@ -10,14 +10,14 @@ internal class ValidateCvvUseCaseTest {
     private val validateCvvUseCase = ValidateCvvUseCase()
 
     @Test
-    fun `returns valid for three digit cvv`() {
+    fun `should validate CVV length`() {
         val result = validateCvvUseCase("123")
 
         assertEquals(CardValidationResult.Valid, result)
     }
 
     @Test
-    fun `returns invalid for short cvv`() {
+    fun `should reject short CVV`() {
         val result = validateCvvUseCase("12")
 
         assertEquals(
@@ -29,7 +29,7 @@ internal class ValidateCvvUseCaseTest {
     }
 
     @Test
-    fun `returns invalid for long cvv`() {
+    fun `should reject long CVV`() {
         val result = validateCvvUseCase("1234")
 
         assertEquals(
@@ -41,7 +41,7 @@ internal class ValidateCvvUseCaseTest {
     }
 
     @Test
-    fun `returns invalid for cvv with letters`() {
+    fun `should reject non digit CVV`() {
         val result = validateCvvUseCase("1a3")
 
         assertEquals(

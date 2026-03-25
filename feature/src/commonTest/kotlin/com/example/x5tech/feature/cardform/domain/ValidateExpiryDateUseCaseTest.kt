@@ -17,14 +17,14 @@ internal class ValidateExpiryDateUseCaseTest {
     private val validateExpiryDateUseCase = ValidateExpiryDateUseCase(currentDateProvider)
 
     @Test
-    fun `returns valid for current month and year`() {
+    fun `should validate expiry date not in past`() {
         val result = validateExpiryDateUseCase("03/26")
 
         assertEquals(CardValidationResult.Valid, result)
     }
 
     @Test
-    fun `returns invalid for expired date`() {
+    fun `should reject expired card`() {
         val result = validateExpiryDateUseCase("02/26")
 
         assertEquals(
@@ -36,7 +36,7 @@ internal class ValidateExpiryDateUseCaseTest {
     }
 
     @Test
-    fun `returns invalid for month outside 01 to 12`() {
+    fun `should reject invalid month`() {
         val result = validateExpiryDateUseCase("13/26")
 
         assertEquals(
@@ -48,7 +48,7 @@ internal class ValidateExpiryDateUseCaseTest {
     }
 
     @Test
-    fun `returns invalid for incorrect format`() {
+    fun `should reject invalid expiry date format`() {
         val result = validateExpiryDateUseCase("3/2026")
 
         assertEquals(

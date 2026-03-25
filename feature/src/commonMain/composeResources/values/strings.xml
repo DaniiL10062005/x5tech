@@ -31,6 +31,8 @@
     <string name="card_form_card_type_unknown">Card type will be detected automatically</string>
     <string name="card_form_save_error_default">Failed to save card</string>
     <string name="card_visual_bank_name_fallback">Digital wallet</string>
+    <string name="card_visual_bank_status_detected">Issuer detected</string>
+    <string name="card_visual_bank_status_pending">Bank appears after BIN lookup</string>
     <string name="card_visual_title">Premium card</string>
     <string name="card_visual_protected">Protected</string>
     <string name="card_visual_live_preview">Live preview</string>

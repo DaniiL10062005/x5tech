@@ -1,20 +1,22 @@
 package com.example.x5tech.model.repository
 
 import com.example.x5tech.model.domain.BankCard
+import io.ktor.client.call.body
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.request.header
-import io.ktor.client.statement.bodyAsText
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.http.isSuccess
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 class BinlistCardRepository(
-    private val httpClient: HttpClient = HttpClient(),
     private val json: Json = Json {
         ignoreUnknownKeys = true
     },
+    private val httpClient: HttpClient = createHttpClient(json),
 ) : CardRepository {
 
     private val savedCards = mutableListOf<BankCard>()
@@ -28,12 +30,11 @@ class BinlistCardRepository(
             header(ACCEPT_VERSION_HEADER, ACCEPT_VERSION)
         }
         if (!response.status.isSuccess()) {
-            return null
+            return LocalBankByBinResolver.resolve(bin)
         }
 
-        return json.decodeFromString<BinlistResponse>(
-            string = response.bodyAsText(),
-        ).bank?.name
+        return response.body<BinlistResponse>().bank?.name?.takeIf(String::isNotBlank)
+            ?: LocalBankByBinResolver.resolve(bin)
     }
 
     override suspend fun saveCard(card: BankCard) {
@@ -57,5 +58,15 @@ class BinlistCardRepository(
         const val ACCEPT_VERSION = "3"
 
         val BIN_LENGTH_RANGE = 6..8
+
+        fun createHttpClient(json: Json): HttpClient {
+            return HttpClient {
+                expectSuccess = false
+
+                install(ContentNegotiation) {
+                    json(json)
+                }
+            }
+        }
     }
 }

@@ -81,18 +81,29 @@ internal fun CardVisual(
                         color = Color.White.copy(alpha = 0.14f),
                     ) {
                         Text(
-                            text = bankName ?: stringResource(Res.string.card_visual_bank_name_fallback),
+                            text = if (bankName == null) {
+                                stringResource(Res.string.card_visual_bank_status_pending)
+                            } else {
+                                stringResource(Res.string.card_visual_bank_status_detected)
+                            },
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.White.copy(alpha = 0.88f),
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         )
                     }
 
-                    Text(
-                        text = stringResource(Res.string.card_visual_title),
+                    AnimatedCardText(
+                        text = bankName ?: stringResource(Res.string.card_visual_bank_name_fallback),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    Text(
+                        text = stringResource(Res.string.card_visual_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White.copy(alpha = 0.88f),
                     )
                 }
 

@@ -44,8 +44,12 @@
   - ровно 3 цифры;
 - форматирование номера карты;
 - маскирование номера карты, имени и CVV;
-- fake-репозиторий для сохранения без backend;
+- определение банка по BIN;
+- `Ktor Client` + `Kotlinx Serialization` реализация для lookup по `binlist.net`;
+- локальный fallback-резолвер BIN-диапазонов, если `binlist` не возвращает `bank.name`;
+- сохранение карты через репозиторий в demo-режиме без backend;
 - unit-тесты для use cases и `ViewModel`;
+- unit-тесты для репозитория и fallback BIN-логики;
 - DI через Koin;
 - Compose UI-компоненты:
   - экран формы;
@@ -88,32 +92,37 @@
 - Compose / Compose Multiplatform
 - Koin
 - Kotlinx Coroutines
+- Ktor Client
+- Kotlinx Serialization
 - StateFlow
 - Unit tests
 - Kotlin Test
 
+## Примеры номеров карт
+
+**СБЕР:**
+- `5469 6700 2659 6588`
+- `2202 2008 7479 9834`
+
+**Т-банк:**
+- `5536 9138 1256 8539`
+
+
 ### Использование Ktor Client и Kotlinx Serialization
 
-В текущей версии проекта `Ktor Client` и `Kotlinx Serialization` не используются в runtime-логике.
+`Ktor Client` и `Kotlinx Serialization` используются в runtime-логике для lookup банка по BIN.
 
-Причина:
-- для тестового задания выбран `FakeCardRepository`, чтобы сфокусироваться на архитектуре, валидации, UI,
-  тестируемости и многоплатформенной бизнес-логике;
-- в проекте отсутствует реальный backend-контур, поэтому полноценный network/data слой с `Ktor Client` и DTO через
-  `Kotlinx Serialization` был бы формальным и не добавлял бы пользы текущему сценарию.
+Как это устроено:
+- `BinlistCardRepository` делает `GET` запрос на `https://lookup.binlist.net/{bin}`;
+- `Ktor Client` настроен с `ContentNegotiation`;
+- ответ десериализуется через `Kotlinx Serialization` в `@Serializable` DTO;
+- если `binlist.net` возвращает ответ без `bank.name` или запрос завершается неуспешно, используется
+  локальный fallback `LocalBankByBinResolver`.
 
-Почему это решение осознанное:
-- основная ценность задания в данной реализации сосредоточена в `ViewModel`, use cases, маскировании,
-  валидации и unit tests;
-- репозиторий оставлен абстракцией, поэтому при необходимости `FakeCardRepository` можно заменить на
-  `CardRepositoryImpl`, использующий `Ktor Client` и `Kotlinx Serialization`, без изменения UI-слоя и
-  основной логики формы.
-
-Если расширять проект дальше, логичное место для интеграции:
-- `Ktor Client`:
-  в реализации `CardRepository` для `POST/GET` запросов;
-- `Kotlinx Serialization`:
-  в DTO-моделях request/response и конфигурации `Json`.
+Почему это решение выбрано:
+- требование задания по `Ktor Client` и `Kotlinx Serialization` закрыто реальной интеграцией, а не только зависимостями;
+- lookup по BIN остаётся изолирован внутри репозитория и не протекает в UI-слой;
+- локальный fallback делает поведение устойчивее, потому что бесплатный `binlist.net` иногда не возвращает имя банка.
 
 ## Структура проекта
 
@@ -142,7 +151,9 @@ root
 - `domain/CardType.kt`
 - `domain/CardValidationResult.kt`
 - `repository/CardRepository.kt`
+- `repository/BinlistCardRepository.kt`
 - `repository/FakeCardRepository.kt`
+- `repository/LocalBankByBinResolver.kt`
 
 ### feature
 - `BankCardFormState.kt`
@@ -178,12 +189,16 @@ root
 
 ```bash
 ./gradlew test
+./gradlew :feature:testAndroidHostTest
+./gradlew :model:allTests
 ```
 
 Для Windows:
 
 ```bash
 gradlew.bat test
+gradlew.bat :feature:testAndroidHostTest
+gradlew.bat :model:allTests
 ```
 
 ## Описание тестов
@@ -193,20 +208,25 @@ gradlew.bat test
 - валидация номера карты;
 - проверка алгоритма Луна;
 - определение типа карты;
+- определение банка по BIN;
 - валидация срока действия;
 - валидация имени держателя;
 - валидация CVV;
 - маскирование данных;
+- fallback-логика репозитория при пустом ответе `binlist`;
 - поведение `BankCardFormViewModel`.
 
 Примеры сценариев:
 - кнопка Save активируется только при валидной форме;
 - корректное определение `VISA` и `MASTERCARD`;
+- корректное определение банка по BIN;
 - обновление validation state при невалидном номере;
 - переключение masked/unmasked режима;
 - вызов репозитория при успешном сохранении.
 
 ## Скриншоты
+
+Скриншоты будут добавлены позже.
 
 ### Form Screen
 ![Form Screen](./docs/screenshots/form-screen.png)
@@ -244,7 +264,8 @@ gradlew.bat test
 
 ## Примечания
 
-- В проекте используется `FakeCardRepository` вместо реального backend.
+- В проекте используется реальный `BinlistCardRepository` для BIN lookup и локальное demo-сохранение в репозитории.
+- `FakeCardRepository` сохранён как тестовый doubles-слой для unit-тестов.
 - Логика времени вынесена через `CurrentDateProvider`, чтобы валидация срока действия была тестируемой.
 - Основной фокус решения: чистая структура, тестируемость, читаемость и изоляция бизнес-логики от UI.
 
@@ -267,10 +288,8 @@ gradlew.bat test
 - [x] Подключить Kotlin Test / JUnit для тестов
 
 Примечание:
-- `Ktor Client` подключен как зависимость проекта, но в runtime-реализации пока не используется, так как
-  используется `FakeCardRepository` и в задаче нет реального backend-контура.
-- `Kotlinx Serialization` подключен как зависимость проекта, но `@Serializable` DTO пока не добавлялись, так как
-  в текущей версии нет реального network/data слоя.
+- `Ktor Client` используется в `BinlistCardRepository` для запроса к `binlist.net`.
+- `Kotlinx Serialization` используется для десериализации BIN lookup response в `@Serializable` DTO.
 
 #### 1.3. Настроить quality tools
 - [x] Подключить Detekt
@@ -324,6 +343,7 @@ gradlew.bat test
 
 #### 2.4. Создать `model/src/commonMain/repository/CardRepository.kt`
 - [x] Создать интерфейс репозитория
+- [x] Добавить `suspend fun getBankByBin(bin: String): String?`
 - [x] Добавить `suspend fun saveCard(card: BankCard)`
 
 Готово, если:
@@ -583,47 +603,55 @@ gradlew.bat test
 #### 13.1. `ValidateCardNumberUseCaseTest.kt`
 - [x] `should validate card number with Luhn algorithm`
 - [x] `should reject invalid card number`
-- [x] `reject short number`
-- [x] `reject letters in card number`
+- [x] `should reject short card number`
+- [x] `should reject card number with letters`
 
 #### 13.2. `DetectCardTypeUseCaseTest.kt`
 - [x] `should detect VISA card type`
 - [x] `should detect MASTERCARD card type`
-- [x] `should detect MIR`
-- [x] `should return UNKNOWN`
+- [x] `should detect MIR card type`
+- [x] `should return UNKNOWN for unsupported prefix`
 
 #### 13.3. `ValidateExpiryDateUseCaseTest.kt`
 - [x] `should validate expiry date not in past`
 - [x] `should reject expired card`
-- [x] `reject invalid month`
-- [x] `reject invalid format`
+- [x] `should reject invalid month`
+- [x] `should reject invalid expiry date format`
 
 #### 13.4. `ValidateCardHolderNameUseCaseTest.kt`
 - [x] `should validate card holder name format`
-- [x] `reject Cyrillic`
-- [x] `reject digits`
-- [x] `reject too short name`
+- [x] `should reject Cyrillic card holder name`
+- [x] `should reject card holder name with digits`
+- [x] `should reject too short card holder name`
 
 #### 13.5. `ValidateCvvUseCaseTest.kt`
 - [x] `should validate CVV length`
-- [x] `reject non-digit CVV`
-- [x] `reject 2 digits`
-- [x] `reject 4 digits`
+- [x] `should reject non digit CVV`
+- [x] `should reject short CVV`
+- [x] `should reject long CVV`
 
 #### 13.6. `FormatCardNumberUseCaseTest.kt`
 - [x] `should format card number with spaces`
-- [x] `should remove invalid symbols`
-- [x] `should trim to 16 digits`
+- [x] `should remove invalid symbols from card number`
+- [x] `should trim card number to 16 digits`
 
 #### 13.7. `MaskCardDataUseCaseTest.kt`
 - [x] `should mask card number correctly`
 
 #### 13.8. `BankCardFormViewModelTest.kt`
 - [x] `should enable save button only when all fields valid`
-- [x] `should update card type after number input`
+- [x] `should detect VISA card type`
+- [x] `should detect MASTERCARD card type`
+- [x] `should resolve bank name by bin`
 - [x] `should show errors for invalid fields`
 - [x] `should toggle visibility state`
 - [x] `should save when form valid`
+
+#### 13.9. `BinlistCardRepositoryTest.kt`
+- [x] `should resolve bank name from binlist response`
+- [x] `should fallback to local bank resolver when binlist bank is empty`
+- [x] `should fallback to local bank resolver when request fails`
+- [x] `should return null for invalid bin`
 
 Готово, если:
 - [x] ключевые сценарии покрыты тестами
@@ -656,7 +684,7 @@ gradlew.bat test
 - [x] Добавить стек
 - [x] Добавить архитектурное описание
 - [x] Добавить структуру проекта
-- [x] Добавить скриншоты экранов
+- [ ] Добавить скриншоты экранов
 - [x] Добавить инструкцию по запуску
 - [x] Добавить описание реализованных use cases
 - [x] Добавить описание покрытия тестами

@@ -13,14 +13,14 @@ internal class ValidateCardHolderNameUseCaseTest {
     )
 
     @Test
-    fun `returns valid for uppercase latin name`() {
+    fun `should validate card holder name format`() {
         val result = validateCardHolderNameUseCase("JOHN SMITH")
 
         assertEquals(CardValidationResult.Valid, result)
     }
 
     @Test
-    fun `returns invalid for too short name`() {
+    fun `should reject too short card holder name`() {
         val result = validateCardHolderNameUseCase("J")
 
         assertEquals(
@@ -32,7 +32,7 @@ internal class ValidateCardHolderNameUseCaseTest {
     }
 
     @Test
-    fun `returns invalid for cyrillic name`() {
+    fun `should reject Cyrillic card holder name`() {
         val result = validateCardHolderNameUseCase("ИВАН ИВАНОВ")
 
         assertEquals(
@@ -44,7 +44,7 @@ internal class ValidateCardHolderNameUseCaseTest {
     }
 
     @Test
-    fun `returns invalid for name with digits`() {
+    fun `should reject card holder name with digits`() {
         val result = validateCardHolderNameUseCase("JOHN2 SMITH")
 
         assertEquals(
@@ -56,7 +56,7 @@ internal class ValidateCardHolderNameUseCaseTest {
     }
 
     @Test
-    fun `returns invalid for name with special characters`() {
+    fun `should reject card holder name with special characters`() {
         val result = validateCardHolderNameUseCase("JOHN@SMITH")
 
         assertEquals(
@@ -68,7 +68,7 @@ internal class ValidateCardHolderNameUseCaseTest {
     }
 
     @Test
-    fun `formats lowercase name with extra spaces to uppercase`() {
+    fun `should normalize lowercase card holder name to uppercase`() {
         val formattedName = formatCardHolderNameUseCase("  john   smith  ")
 
         assertEquals("JOHN SMITH", formattedName)

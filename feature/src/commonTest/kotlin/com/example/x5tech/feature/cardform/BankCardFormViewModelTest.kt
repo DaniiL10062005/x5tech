@@ -73,7 +73,7 @@ internal class BankCardFormViewModelTest {
     }
 
     @Test
-    fun `should update validation state for invalid card number`() = runTest(testDispatcher) {
+    fun `should show errors for invalid fields`() = runTest(testDispatcher) {
         val viewModel = createViewModel(coroutineScope = this)
 
         viewModel.onCardNumberChanged("1234")
@@ -87,7 +87,7 @@ internal class BankCardFormViewModelTest {
     }
 
     @Test
-    fun `should toggle masked mode`() = runTest(testDispatcher) {
+    fun `should toggle visibility state`() = runTest(testDispatcher) {
         val viewModel = createViewModel(coroutineScope = this)
 
         viewModel.onCardNumberChanged("4111111111111111")
@@ -105,7 +105,7 @@ internal class BankCardFormViewModelTest {
     }
 
     @Test
-    fun `should call repository on save when form valid`() = runTest(testDispatcher) {
+    fun `should save when form valid`() = runTest(testDispatcher) {
         val repository = FakeCardRepository(delayMillis = 0)
         val viewModel = createViewModel(
             cardRepository = repository,

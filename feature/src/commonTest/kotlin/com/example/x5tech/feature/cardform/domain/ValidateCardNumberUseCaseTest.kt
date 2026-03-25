@@ -10,7 +10,7 @@ internal class ValidateCardNumberUseCaseTest {
     private val validateCardNumberUseCase = ValidateCardNumberUseCase()
 
     @Test
-    fun `returns valid for visa test card number`() {
+    fun `should validate card number with Luhn algorithm`() {
         val result = validateCardNumberUseCase("4111 1111 1111 1111")
 
         assertEquals(CardValidationResult.Valid, result)
@@ -31,7 +31,7 @@ internal class ValidateCardNumberUseCaseTest {
     }
 
     @Test
-    fun `returns invalid for card number that fails luhn check`() {
+    fun `should reject invalid card number`() {
         val result = validateCardNumberUseCase("4111 1111 1111 1112")
 
         assertEquals(
@@ -43,7 +43,7 @@ internal class ValidateCardNumberUseCaseTest {
     }
 
     @Test
-    fun `returns invalid for short card number`() {
+    fun `should reject short card number`() {
         val result = validateCardNumberUseCase("4111 1111 1111")
 
         assertEquals(
@@ -55,7 +55,7 @@ internal class ValidateCardNumberUseCaseTest {
     }
 
     @Test
-    fun `returns invalid for card number with letters`() {
+    fun `should reject card number with letters`() {
         val result = validateCardNumberUseCase("4111 1111 1111 11ab")
 
         assertEquals(
