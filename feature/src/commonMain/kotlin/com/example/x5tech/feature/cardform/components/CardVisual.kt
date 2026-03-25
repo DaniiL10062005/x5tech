@@ -12,14 +12,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -53,133 +51,94 @@ internal fun CardVisual(
         modifier = modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 24.dp,
-                shape = RoundedCornerShape(34.dp),
+                elevation = 18.dp,
+                shape = RoundedCornerShape(30.dp),
                 ambientColor = Color(0x33111A25),
                 spotColor = Color(0x33111A25),
             )
-            .clip(RoundedCornerShape(34.dp))
+            .clip(RoundedCornerShape(30.dp))
             .background(cardBackgroundBrush(cardType))
-            .padding(24.dp),
+            .padding(horizontal = 22.dp, vertical = 20.dp),
     ) {
         CardDecorations()
 
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(22.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    Surface(
-                        shape = RoundedCornerShape(99.dp),
-                        color = Color.White.copy(alpha = 0.14f),
-                    ) {
-                        Text(
-                            text = if (bankName == null) {
-                                stringResource(Res.string.card_visual_bank_status_pending)
-                            } else {
-                                stringResource(Res.string.card_visual_bank_status_detected)
-                            },
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Color.White.copy(alpha = 0.88f),
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                        )
-                    }
-
                     AnimatedCardText(
                         text = bankName ?: stringResource(Res.string.card_visual_bank_name_fallback),
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
 
                     Text(
-                        text = stringResource(Res.string.card_visual_title),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White.copy(alpha = 0.88f),
+                        text = if (isMasked) {
+                            stringResource(Res.string.card_visual_protected)
+                        } else {
+                            stringResource(Res.string.card_visual_live_preview)
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.White.copy(alpha = 0.76f),
                     )
                 }
 
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    CardBrandMark(cardType = cardType)
-                    Surface(
-                        shape = RoundedCornerShape(99.dp),
-                        color = Color.Black.copy(alpha = 0.18f),
-                    ) {
-                        Text(
-                            text = if (isMasked) {
-                                stringResource(Res.string.card_visual_protected)
-                            } else {
-                                stringResource(Res.string.card_visual_live_preview)
-                            },
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.White.copy(alpha = 0.9f),
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
-                        )
-                    }
-                }
+                CardBrandMark(cardType = cardType)
             }
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
                     text = stringResource(Res.string.card_visual_number_label),
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color.White.copy(alpha = 0.72f),
+                    color = Color.White.copy(alpha = 0.62f),
                 )
                 AnimatedCardText(
                     text = displayValue(
                         value = cardNumber,
                         fallback = stringResource(Res.string.card_visual_number_fallback),
                     ),
-                    style = MaterialTheme.typography.headlineMedium.copy(letterSpacing = 1.2.sp),
+                    style = MaterialTheme.typography.headlineMedium.copy(letterSpacing = 1.4.sp),
                     fontWeight = FontWeight.SemiBold,
                 )
             }
 
-            Surface(
-                shape = RoundedCornerShape(26.dp),
-                color = Color.White.copy(alpha = 0.12f),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 15.dp),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp),
-                ) {
-                    CardMetaBlock(
-                        label = stringResource(Res.string.card_visual_holder_label),
-                        value = displayValue(
-                            value = holderName,
-                            fallback = stringResource(Res.string.card_visual_holder_fallback),
-                        ),
-                        modifier = Modifier.weight(1.15f),
-                    )
-                    CardMetaBlock(
-                        label = stringResource(Res.string.card_visual_expires_label),
-                        value = displayValue(
-                            value = expiryDate,
-                            fallback = stringResource(Res.string.card_form_input_expiry_date_placeholder),
-                        ),
-                        modifier = Modifier.weight(0.7f),
-                    )
-                    CardMetaBlock(
-                        label = stringResource(Res.string.card_visual_cvv_label),
-                        value = stringResource(Res.string.card_form_input_cvv_placeholder),
-                        modifier = Modifier.weight(0.45f),
-                    )
-                }
+                CardMetaBlock(
+                    label = stringResource(Res.string.card_visual_holder_label),
+                    value = displayValue(
+                        value = holderName,
+                        fallback = stringResource(Res.string.card_visual_holder_fallback),
+                    ),
+                    modifier = Modifier.weight(1.2f),
+                )
+                CardMetaBlock(
+                    label = stringResource(Res.string.card_visual_expires_label),
+                    value = displayValue(
+                        value = expiryDate,
+                        fallback = stringResource(Res.string.card_form_input_expiry_date_placeholder),
+                    ),
+                    modifier = Modifier.weight(0.7f),
+                )
+                CardMetaBlock(
+                    label = stringResource(Res.string.card_visual_cvv_label),
+                    value = stringResource(Res.string.card_form_input_cvv_placeholder),
+                    modifier = Modifier.weight(0.45f),
+                )
             }
         }
     }
@@ -190,26 +149,12 @@ private fun BoxScope.CardDecorations() {
     Box(
         modifier = Modifier
             .align(Alignment.TopEnd)
-            .size(148.dp)
+            .size(132.dp)
             .clip(CircleShape)
             .background(
                 Brush.radialGradient(
                     colors = listOf(
-                        Color.White.copy(alpha = 0.28f),
-                        Color.Transparent,
-                    ),
-                ),
-            ),
-    )
-    Box(
-        modifier = Modifier
-            .align(Alignment.BottomStart)
-            .size(width = 180.dp, height = 96.dp)
-            .clip(RoundedCornerShape(topEnd = 96.dp, bottomEnd = 96.dp))
-            .background(
-                Brush.horizontalGradient(
-                    colors = listOf(
-                        Color.White.copy(alpha = 0.14f),
+                        Color.White.copy(alpha = 0.22f),
                         Color.Transparent,
                     ),
                 ),
@@ -230,7 +175,7 @@ private fun CardMetaBlock(
         Text(
             text = label.uppercase(),
             style = MaterialTheme.typography.labelSmall,
-            color = Color.White.copy(alpha = 0.68f),
+            color = Color.White.copy(alpha = 0.58f),
         )
         AnimatedCardText(
             text = value,
@@ -274,23 +219,17 @@ private fun CardBrandMark(cardType: CardType) {
     ) {
         Box(
             modifier = Modifier
-                .size(30.dp)
+                .size(18.dp)
                 .clip(CircleShape)
-                .background(Color.White.copy(alpha = 0.82f)),
+                .background(Color.White.copy(alpha = 0.72f)),
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Surface(
-            shape = RoundedCornerShape(99.dp),
-            color = brandTint(cardType).copy(alpha = 0.9f),
-        ) {
-            Text(
-                text = cardTypeLabel(cardType),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF0D1320),
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            )
-        }
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = cardTypeLabel(cardType),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = brandTint(cardType),
+        )
     }
 }
 
@@ -303,10 +242,10 @@ private fun displayValue(
 
 private fun brandTint(cardType: CardType): Color {
     return when (cardType) {
-        CardType.VISA -> Color(0xFF8FD3FF)
-        CardType.MASTERCARD -> Color(0xFFFFB66B)
-        CardType.MIR -> Color(0xFF8CE4B0)
-        CardType.UNKNOWN -> Color(0xFFD8DEE7)
+        CardType.VISA -> Color(0xFFA9DAFF)
+        CardType.MASTERCARD -> Color(0xFFFFC17E)
+        CardType.MIR -> Color(0xFF9BE7BA)
+        CardType.UNKNOWN -> Color(0xFFDCE3EB)
     }
 }
 

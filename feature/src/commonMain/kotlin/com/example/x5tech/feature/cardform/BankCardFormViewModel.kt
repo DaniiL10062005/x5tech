@@ -44,22 +44,34 @@ class BankCardFormViewModel internal constructor(
 
     internal fun onCardNumberChanged(input: String) {
         rawCardNumber = input.filter(Char::isDigit).take(CARD_NUMBER_LENGTH)
+        mutableState.update { currentState ->
+            currentState.copy(isCardNumberTouched = true)
+        }
         lookupBankByBin()
         updateState()
     }
 
     internal fun onHolderNameChanged(input: String) {
         rawHolderName = formatHolderName(input)
+        mutableState.update { currentState ->
+            currentState.copy(isHolderNameTouched = true)
+        }
         updateState()
     }
 
     internal fun onExpiryDateChanged(input: String) {
         rawExpiryDate = formatExpiryDate(input)
+        mutableState.update { currentState ->
+            currentState.copy(isExpiryDateTouched = true)
+        }
         updateState()
     }
 
     internal fun onCvvChanged(input: String) {
         rawCvv = input.filter(Char::isDigit).take(CVV_LENGTH)
+        mutableState.update { currentState ->
+            currentState.copy(isCvvTouched = true)
+        }
         updateState()
     }
 
@@ -84,6 +96,10 @@ class BankCardFormViewModel internal constructor(
                     isSaved = false,
                     errorMessage = null,
                     isSaveEnabled = false,
+                    isCardNumberTouched = true,
+                    isHolderNameTouched = true,
+                    isExpiryDateTouched = true,
+                    isCvvTouched = true,
                 )
             }
 
@@ -142,6 +158,10 @@ class BankCardFormViewModel internal constructor(
                 cvv = rawCvv,
                 cardType = cardType,
                 bankName = resolvedBankName,
+                isCardNumberTouched = currentState.isCardNumberTouched,
+                isHolderNameTouched = currentState.isHolderNameTouched,
+                isExpiryDateTouched = currentState.isExpiryDateTouched,
+                isCvvTouched = currentState.isCvvTouched,
                 cardNumberValidationResult = cardNumberValidationResult,
                 holderNameValidationResult = holderNameValidationResult,
                 expiryDateValidationResult = expiryDateValidationResult,

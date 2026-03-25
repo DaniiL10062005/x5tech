@@ -63,6 +63,27 @@ internal class BinlistCardRepositoryTest {
     }
 
     @Test
+    fun `should fallback to local bank resolver when request throws exception`() = runTest {
+        val httpClient = HttpClient(
+            engine = MockEngine {
+                error("network unavailable")
+            },
+        ) {
+            install(ContentNegotiation) {
+                json(json)
+            }
+            expectSuccess = false
+        }
+
+        val repository = BinlistCardRepository(
+            json = json,
+            httpClient = httpClient,
+        )
+
+        assertEquals("SberBank", repository.getBankByBin("54696700"))
+    }
+
+    @Test
     fun `should return null for invalid bin`() = runTest {
         val repository = createRepository(
             responseBody = """{}""",

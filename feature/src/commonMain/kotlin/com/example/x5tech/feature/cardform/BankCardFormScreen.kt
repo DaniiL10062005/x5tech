@@ -25,8 +25,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -34,6 +38,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import com.example.x5tech.feature.cardform.components.CardInputField
 import com.example.x5tech.feature.cardform.components.CardVisual
@@ -74,6 +80,24 @@ internal fun BankCardFormScreen(
     onSaveClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var expiryDateFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = state.expiryDate,
+                selection = TextRange(state.expiryDate.length),
+            ),
+        )
+    }
+
+    LaunchedEffect(state.expiryDate) {
+        if (expiryDateFieldValue.text != state.expiryDate) {
+            expiryDateFieldValue = TextFieldValue(
+                text = state.expiryDate,
+                selection = TextRange(state.expiryDate.length),
+            )
+        }
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -127,8 +151,11 @@ internal fun BankCardFormScreen(
                         label = stringResource(Res.string.card_form_input_card_number),
                         value = state.cardNumber,
                         onValueChange = onCardNumberChanged,
-                        isError = state.cardNumberValidationResult is CardValidationResult.Invalid,
-                        errorText = state.cardNumberValidationResult.toErrorText(),
+                        isError = state.isCardNumberTouched &&
+                            state.cardNumberValidationResult is CardValidationResult.Invalid,
+                        errorText = state.cardNumberValidationResult.toErrorText(
+                            shouldShowError = state.isCardNumberTouched,
+                        ),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         placeholder = stringResource(Res.string.card_form_input_card_number_placeholder),
                     )
@@ -137,8 +164,11 @@ internal fun BankCardFormScreen(
                         label = stringResource(Res.string.card_form_input_holder_name),
                         value = state.holderName,
                         onValueChange = onHolderNameChanged,
-                        isError = state.holderNameValidationResult is CardValidationResult.Invalid,
-                        errorText = state.holderNameValidationResult.toErrorText(),
+                        isError = state.isHolderNameTouched &&
+                            state.holderNameValidationResult is CardValidationResult.Invalid,
+                        errorText = state.holderNameValidationResult.toErrorText(
+                            shouldShowError = state.isHolderNameTouched,
+                        ),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         placeholder = stringResource(Res.string.card_form_input_holder_name_placeholder),
                     )
@@ -149,10 +179,16 @@ internal fun BankCardFormScreen(
                     ) {
                         CardInputField(
                             label = stringResource(Res.string.card_form_input_expiry_date),
-                            value = state.expiryDate,
-                            onValueChange = onExpiryDateChanged,
-                            isError = state.expiryDateValidationResult is CardValidationResult.Invalid,
-                            errorText = state.expiryDateValidationResult.toErrorText(),
+                            value = expiryDateFieldValue,
+                            onValueChange = { textFieldValue ->
+                                expiryDateFieldValue = textFieldValue
+                                onExpiryDateChanged(textFieldValue.text)
+                            },
+                            isError = state.isExpiryDateTouched &&
+                                state.expiryDateValidationResult is CardValidationResult.Invalid,
+                            errorText = state.expiryDateValidationResult.toErrorText(
+                                shouldShowError = state.isExpiryDateTouched,
+                            ),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.weight(1f),
                             placeholder = stringResource(Res.string.card_form_input_expiry_date_placeholder),
@@ -161,8 +197,11 @@ internal fun BankCardFormScreen(
                             label = stringResource(Res.string.card_form_input_cvv),
                             value = state.cvv,
                             onValueChange = onCvvChanged,
-                            isError = state.cvvValidationResult is CardValidationResult.Invalid,
-                            errorText = state.cvvValidationResult.toErrorText(),
+                            isError = state.isCvvTouched &&
+                                state.cvvValidationResult is CardValidationResult.Invalid,
+                            errorText = state.cvvValidationResult.toErrorText(
+                                shouldShowError = state.isCvvTouched,
+                            ),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.NumberPassword,
                             ),
@@ -403,7 +442,13 @@ private fun StatusBadge(
 }
 
 @Composable
-private fun CardValidationResult?.toErrorText(): String? {
+private fun CardValidationResult?.toErrorText(
+    shouldShowError: Boolean,
+): String? {
+    if (!shouldShowError) {
+        return null
+    }
+
     val invalidResult = this as? CardValidationResult.Invalid ?: return null
     val error = invalidResult.errors.firstOrNull() ?: return null
 

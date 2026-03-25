@@ -26,15 +26,20 @@ class BinlistCardRepository(
             return null
         }
 
-        val response = httpClient.get("$BASE_URL/$bin") {
-            header(ACCEPT_VERSION_HEADER, ACCEPT_VERSION)
-        }
-        if (!response.status.isSuccess()) {
-            return LocalBankByBinResolver.resolve(bin)
+        LocalBankByBinResolver.resolve(bin)?.let { localBankName ->
+            return localBankName
         }
 
-        return response.body<BinlistResponse>().bank?.name?.takeIf(String::isNotBlank)
-            ?: LocalBankByBinResolver.resolve(bin)
+        return runCatching {
+            val response = httpClient.get("$BASE_URL/$bin") {
+                header(ACCEPT_VERSION_HEADER, ACCEPT_VERSION)
+            }
+            if (!response.status.isSuccess()) {
+                return@runCatching null
+            }
+
+            response.body<BinlistResponse>().bank?.name?.takeIf(String::isNotBlank)
+        }.getOrNull() ?: LocalBankByBinResolver.resolve(bin)
     }
 
     override suspend fun saveCard(card: BankCard) {
