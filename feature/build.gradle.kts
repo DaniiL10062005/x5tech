@@ -13,7 +13,7 @@ compose.resources {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.example.x5tech.feature.cardform"
         compileSdk = 36
         minSdk = 24

@@ -7,7 +7,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.example.x5tech.model"
         compileSdk = 36
         minSdk = 24
