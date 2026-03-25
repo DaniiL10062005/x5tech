@@ -4,7 +4,6 @@ import com.example.x5tech.model.domain.BankCard
 import com.example.x5tech.model.repository.CardRepository
 import com.example.x5tech.model.domain.CardType
 import com.example.x5tech.model.domain.CardValidationResult
-import com.example.x5tech.feature.cardform.domain.DetectBankByBinUseCase
 import com.example.x5tech.feature.cardform.domain.DetectCardTypeUseCase
 import com.example.x5tech.feature.cardform.domain.FormatCardNumberUseCase
 import com.example.x5tech.feature.cardform.domain.MaskCardDataUseCase
@@ -17,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class BankCardFormViewModel internal constructor(
@@ -25,7 +25,6 @@ class BankCardFormViewModel internal constructor(
     private val validateExpiryDateUseCase: ValidateExpiryDateUseCase,
     private val validateCardHolderNameUseCase: ValidateCardHolderNameUseCase,
     private val validateCvvUseCase: ValidateCvvUseCase,
-    private val detectBankByBinUseCase: DetectBankByBinUseCase,
     private val detectCardTypeUseCase: DetectCardTypeUseCase,
     private val maskCardDataUseCase: MaskCardDataUseCase,
     private val cardRepository: CardRepository,
@@ -39,9 +38,13 @@ class BankCardFormViewModel internal constructor(
     private var rawHolderName: String = ""
     private var rawExpiryDate: String = ""
     private var rawCvv: String = ""
+    private var resolvedBankName: String? = null
+    private var requestedBin: String? = null
+    private var bankLookupJob: Job? = null
 
     internal fun onCardNumberChanged(input: String) {
         rawCardNumber = input.filter(Char::isDigit).take(CARD_NUMBER_LENGTH)
+        lookupBankByBin()
         updateState()
     }
 
@@ -121,7 +124,6 @@ class BankCardFormViewModel internal constructor(
         val holderNameValidationResult = validateCardHolderNameUseCase(rawHolderName)
         val expiryDateValidationResult = validateExpiryDateUseCase(rawExpiryDate)
         val cvvValidationResult = validateCvvUseCase(rawCvv)
-        val bankName = detectBankByBinUseCase(rawCardNumber)
         val cardType = detectCardTypeUseCase(rawCardNumber)
 
         mutableState.update { currentState ->
@@ -139,7 +141,7 @@ class BankCardFormViewModel internal constructor(
                 expiryDate = rawExpiryDate,
                 cvv = rawCvv,
                 cardType = cardType,
-                bankName = bankName,
+                bankName = resolvedBankName,
                 cardNumberValidationResult = cardNumberValidationResult,
                 holderNameValidationResult = holderNameValidationResult,
                 expiryDateValidationResult = expiryDateValidationResult,
@@ -154,6 +156,45 @@ class BankCardFormViewModel internal constructor(
                 errorMessage = null,
             )
         }
+    }
+
+    private fun lookupBankByBin() {
+        val bin = currentBin()
+        if (bin == null) {
+            bankLookupJob?.cancel()
+            bankLookupJob = null
+            requestedBin = null
+            resolvedBankName = null
+            return
+        }
+
+        if (bin == requestedBin) {
+            return
+        }
+
+        requestedBin = bin
+        resolvedBankName = null
+        bankLookupJob?.cancel()
+        bankLookupJob = viewModelScope.launch {
+            val bankName = runCatching {
+                cardRepository.getBankByBin(bin)
+            }.getOrNull()
+
+            if (currentBin() == bin) {
+                resolvedBankName = bankName
+                mutableState.update { currentState ->
+                    currentState.copy(bankName = bankName)
+                }
+            }
+        }
+    }
+
+    private fun currentBin(): String? {
+        if (rawCardNumber.length < MIN_BIN_LENGTH) {
+            return null
+        }
+
+        return rawCardNumber.take(MAX_BIN_LENGTH)
     }
 
     private fun areAllFieldsValid(
@@ -200,6 +241,8 @@ class BankCardFormViewModel internal constructor(
         const val CVV_LENGTH = 3
         const val MONTH_LENGTH = 2
         const val EXPIRY_DATE_DIGITS_LENGTH = 4
+        const val MIN_BIN_LENGTH = 6
+        const val MAX_BIN_LENGTH = 8
         const val SINGLE_SPACE = " "
 
         val MULTIPLE_SPACES_REGEX = Regex("\\s+")

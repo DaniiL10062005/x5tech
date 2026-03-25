@@ -1,10 +1,9 @@
 package com.example.x5tech.feature.cardform
 
 import com.example.x5tech.model.repository.CardRepository
+import com.example.x5tech.model.repository.BinlistCardRepository
 import com.example.x5tech.feature.cardform.domain.CurrentDateProvider
-import com.example.x5tech.feature.cardform.domain.DetectBankByBinUseCase
 import com.example.x5tech.feature.cardform.domain.DetectCardTypeUseCase
-import com.example.x5tech.model.repository.FakeCardRepository
 import com.example.x5tech.feature.cardform.domain.FormatCardNumberUseCase
 import com.example.x5tech.feature.cardform.domain.MaskCardDataUseCase
 import com.example.x5tech.feature.cardform.domain.ValidateCardHolderNameUseCase
@@ -24,12 +23,11 @@ fun createBankCardFormModule(
     factory { ValidateExpiryDateUseCase(currentDateProvider = get()) }
     factory { ValidateCardHolderNameUseCase() }
     factory { ValidateCvvUseCase() }
-    factory { DetectBankByBinUseCase() }
     factory { DetectCardTypeUseCase() }
     factory { MaskCardDataUseCase() }
 
     single<CardRepository> {
-        FakeCardRepository()
+        BinlistCardRepository()
     }
 
     factory {
@@ -39,7 +37,6 @@ fun createBankCardFormModule(
             validateExpiryDateUseCase = get(),
             validateCardHolderNameUseCase = get(),
             validateCvvUseCase = get(),
-            detectBankByBinUseCase = get(),
             detectCardTypeUseCase = get(),
             maskCardDataUseCase = get(),
             cardRepository = get(),

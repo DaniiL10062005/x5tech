@@ -2,7 +2,6 @@ package com.example.x5tech.feature.cardform
 
 import com.example.x5tech.feature.cardform.domain.CurrentDate
 import com.example.x5tech.feature.cardform.domain.CurrentDateProvider
-import com.example.x5tech.feature.cardform.domain.DetectBankByBinUseCase
 import com.example.x5tech.feature.cardform.domain.DetectCardTypeUseCase
 import com.example.x5tech.feature.cardform.domain.FormatCardNumberUseCase
 import com.example.x5tech.feature.cardform.domain.MaskCardDataUseCase
@@ -61,6 +60,16 @@ internal class BankCardFormViewModelTest {
         viewModel.onCardNumberChanged("5555555555554444")
 
         assertEquals(CardType.MASTERCARD, viewModel.state.value.cardType)
+    }
+
+    @Test
+    fun `should resolve bank name by bin`() = runTest(testDispatcher) {
+        val viewModel = createViewModel(coroutineScope = this)
+
+        viewModel.onCardNumberChanged("4276001111111111")
+        advanceUntilIdle()
+
+        assertEquals("SberBank", viewModel.state.value.bankName)
     }
 
     @Test
@@ -128,7 +137,6 @@ internal class BankCardFormViewModelTest {
             ),
             validateCardHolderNameUseCase = ValidateCardHolderNameUseCase(),
             validateCvvUseCase = ValidateCvvUseCase(),
-            detectBankByBinUseCase = DetectBankByBinUseCase(),
             detectCardTypeUseCase = DetectCardTypeUseCase(),
             maskCardDataUseCase = MaskCardDataUseCase(),
             cardRepository = cardRepository,
