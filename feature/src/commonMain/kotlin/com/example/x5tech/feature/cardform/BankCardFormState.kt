@@ -18,6 +18,6 @@ internal data class BankCardFormState(
     val isSaveEnabled: Boolean = false,
     val isSaving: Boolean = false,
     val isSaved: Boolean = false,
-    val errorMessage: String? = null,
+    val errorMessage: UiText? = null,
 )
 

@@ -37,9 +37,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.x5tech.feature.cardform.components.CardInputField
 import com.example.x5tech.feature.cardform.components.CardVisual
+import com.example.x5tech.feature.cardform.resources.Res
+import com.example.x5tech.feature.cardform.resources.*
 import com.example.x5tech.model.domain.CardType
 import com.example.x5tech.model.domain.CardValidationError
 import com.example.x5tech.model.domain.CardValidationResult
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun BankCardFormScreen(
@@ -121,23 +124,23 @@ internal fun BankCardFormScreen(
                     FormHeader()
 
                     CardInputField(
-                        label = "Card number",
+                        label = stringResource(Res.string.card_form_input_card_number),
                         value = state.cardNumber,
                         onValueChange = onCardNumberChanged,
                         isError = state.cardNumberValidationResult is CardValidationResult.Invalid,
                         errorText = state.cardNumberValidationResult.toErrorText(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        placeholder = "1234 5678 9012 3456",
+                        placeholder = stringResource(Res.string.card_form_input_card_number_placeholder),
                     )
 
                     CardInputField(
-                        label = "Cardholder name",
+                        label = stringResource(Res.string.card_form_input_holder_name),
                         value = state.holderName,
                         onValueChange = onHolderNameChanged,
                         isError = state.holderNameValidationResult is CardValidationResult.Invalid,
                         errorText = state.holderNameValidationResult.toErrorText(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                        placeholder = "JANE DOE",
+                        placeholder = stringResource(Res.string.card_form_input_holder_name_placeholder),
                     )
 
                     Row(
@@ -145,17 +148,17 @@ internal fun BankCardFormScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         CardInputField(
-                            label = "Expiry date",
+                            label = stringResource(Res.string.card_form_input_expiry_date),
                             value = state.expiryDate,
                             onValueChange = onExpiryDateChanged,
                             isError = state.expiryDateValidationResult is CardValidationResult.Invalid,
                             errorText = state.expiryDateValidationResult.toErrorText(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.weight(1f),
-                            placeholder = "MM/YY",
+                            placeholder = stringResource(Res.string.card_form_input_expiry_date_placeholder),
                         )
                         CardInputField(
-                            label = "CVV",
+                            label = stringResource(Res.string.card_form_input_cvv),
                             value = state.cvv,
                             onValueChange = onCvvChanged,
                             isError = state.cvvValidationResult is CardValidationResult.Invalid,
@@ -165,7 +168,7 @@ internal fun BankCardFormScreen(
                             ),
                             modifier = Modifier.weight(0.75f),
                             visualTransformation = PasswordVisualTransformation(),
-                            placeholder = "***",
+                            placeholder = stringResource(Res.string.card_form_input_cvv_placeholder),
                         )
                     }
 
@@ -176,7 +179,7 @@ internal fun BankCardFormScreen(
 
                     state.errorMessage?.let { message ->
                         StatusBadge(
-                            text = message,
+                            text = message.asString(),
                             containerColor = Color(0xFFFBEAE8),
                             contentColor = Color(0xFFB42318),
                         )
@@ -184,7 +187,7 @@ internal fun BankCardFormScreen(
 
                     if (state.isSaved) {
                         StatusBadge(
-                            text = "Card saved successfully",
+                            text = stringResource(Res.string.card_form_saved_success),
                             containerColor = Color(0xFFE8F5EC),
                             contentColor = Color(0xFF1F6A43),
                         )
@@ -212,7 +215,7 @@ internal fun BankCardFormScreen(
                             )
                         } else {
                             Text(
-                                text = "Save securely",
+                                text = stringResource(Res.string.card_form_save_action),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                             )
@@ -269,6 +272,9 @@ private fun HeaderBlock(
     cardType: CardType,
     bankName: String?,
 ) {
+    val cardTypeTitle = cardTypeTitle(cardType).asString()
+    val bankSeparator = stringResource(Res.string.card_form_header_bank_separator)
+
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -277,7 +283,7 @@ private fun HeaderBlock(
             color = Color.White.copy(alpha = 0.7f),
         ) {
             Text(
-                text = "Wallet setup",
+                text = stringResource(Res.string.card_form_label_wallet_setup),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF3E566F),
@@ -286,7 +292,7 @@ private fun HeaderBlock(
         }
 
         Text(
-            text = "Add a bank card with live validation",
+            text = stringResource(Res.string.card_form_header_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -294,9 +300,9 @@ private fun HeaderBlock(
 
         Text(
             text = buildString {
-                append(cardTypeTitle(cardType))
+                append(cardTypeTitle)
                 bankName?.let {
-                    append(" / ")
+                    append(bankSeparator)
                     append(it)
                 }
             },
@@ -316,7 +322,7 @@ private fun FormHeader() {
             color = Color(0xFFEAF0F6),
         ) {
             Text(
-                text = "Secure form",
+                text = stringResource(Res.string.card_form_label_secure_form),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF25486D),
@@ -325,12 +331,12 @@ private fun FormHeader() {
         }
 
         Text(
-            text = "Card details",
+            text = stringResource(Res.string.card_form_form_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
         )
         Text(
-            text = "Designed for quick input, instant feedback, and a cleaner preview state.",
+            text = stringResource(Res.string.card_form_form_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -358,12 +364,12 @@ private fun ShowHideSwitch(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
-                    text = "Hide sensitive data",
+                    text = stringResource(Res.string.card_form_mask_title),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = "Switch between live and protected preview modes.",
+                    text = stringResource(Res.string.card_form_mask_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -396,27 +402,36 @@ private fun StatusBadge(
     }
 }
 
+@Composable
 private fun CardValidationResult?.toErrorText(): String? {
     val invalidResult = this as? CardValidationResult.Invalid ?: return null
     val error = invalidResult.errors.firstOrNull() ?: return null
 
     return when (error) {
-        CardValidationError.EMPTY_NUMBER -> "Enter the card number"
-        CardValidationError.INVALID_NUMBER -> "Enter a valid card number"
-        CardValidationError.EMPTY_HOLDER_NAME -> "Enter the cardholder name"
-        CardValidationError.INVALID_HOLDER_NAME -> "Use only uppercase Latin letters and spaces"
-        CardValidationError.EMPTY_EXPIRATION_DATE -> "Enter the expiry date"
-        CardValidationError.INVALID_EXPIRATION_DATE -> "Enter a valid expiry date in MM/YY"
-        CardValidationError.EMPTY_CVV -> "Enter the CVV"
-        CardValidationError.INVALID_CVV -> "CVV must contain exactly 3 digits"
+        CardValidationError.EMPTY_NUMBER ->
+            stringResource(Res.string.card_form_error_empty_number)
+        CardValidationError.INVALID_NUMBER ->
+            stringResource(Res.string.card_form_error_invalid_number)
+        CardValidationError.EMPTY_HOLDER_NAME ->
+            stringResource(Res.string.card_form_error_empty_holder_name)
+        CardValidationError.INVALID_HOLDER_NAME ->
+            stringResource(Res.string.card_form_error_invalid_holder_name)
+        CardValidationError.EMPTY_EXPIRATION_DATE ->
+            stringResource(Res.string.card_form_error_empty_expiration_date)
+        CardValidationError.INVALID_EXPIRATION_DATE ->
+            stringResource(Res.string.card_form_error_invalid_expiration_date)
+        CardValidationError.EMPTY_CVV ->
+            stringResource(Res.string.card_form_error_empty_cvv)
+        CardValidationError.INVALID_CVV ->
+            stringResource(Res.string.card_form_error_invalid_cvv)
     }
 }
 
-private fun cardTypeTitle(cardType: CardType): String {
+private fun cardTypeTitle(cardType: CardType): UiText {
     return when (cardType) {
-        CardType.VISA -> "Visa ready"
-        CardType.MASTERCARD -> "Mastercard ready"
-        CardType.MIR -> "Mir ready"
-        CardType.UNKNOWN -> "Card type will be detected automatically"
+        CardType.VISA -> UiText.Resource(Res.string.card_form_card_type_visa_ready)
+        CardType.MASTERCARD -> UiText.Resource(Res.string.card_form_card_type_mastercard_ready)
+        CardType.MIR -> UiText.Resource(Res.string.card_form_card_type_mir_ready)
+        CardType.UNKNOWN -> UiText.Resource(Res.string.card_form_card_type_unknown)
     }
 }

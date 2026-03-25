@@ -108,7 +108,7 @@ class BankCardFormViewModel internal constructor(
                     it.copy(
                         isSaving = false,
                         isSaved = false,
-                        errorMessage = throwable.message ?: DEFAULT_SAVE_ERROR_MESSAGE,
+                        errorMessage = throwable.toUiText(),
                         isSaveEnabled = canSave(),
                     )
                 }
@@ -201,7 +201,6 @@ class BankCardFormViewModel internal constructor(
         const val MONTH_LENGTH = 2
         const val EXPIRY_DATE_DIGITS_LENGTH = 4
         const val SINGLE_SPACE = " "
-        const val DEFAULT_SAVE_ERROR_MESSAGE = "Failed to save card"
 
         val MULTIPLE_SPACES_REGEX = Regex("\\s+")
     }

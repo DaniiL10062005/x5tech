@@ -33,7 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.x5tech.feature.cardform.resources.Res
+import com.example.x5tech.feature.cardform.resources.*
 import com.example.x5tech.model.domain.CardType
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CardVisual(
@@ -78,7 +81,7 @@ internal fun CardVisual(
                         color = Color.White.copy(alpha = 0.14f),
                     ) {
                         Text(
-                            text = bankName ?: "Digital wallet",
+                            text = bankName ?: stringResource(Res.string.card_visual_bank_name_fallback),
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.White.copy(alpha = 0.88f),
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -86,7 +89,7 @@ internal fun CardVisual(
                     }
 
                     Text(
-                        text = "Premium card",
+                        text = stringResource(Res.string.card_visual_title),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
@@ -103,7 +106,11 @@ internal fun CardVisual(
                         color = Color.Black.copy(alpha = 0.18f),
                     ) {
                         Text(
-                            text = if (isMasked) "Protected" else "Live preview",
+                            text = if (isMasked) {
+                                stringResource(Res.string.card_visual_protected)
+                            } else {
+                                stringResource(Res.string.card_visual_live_preview)
+                            },
                             style = MaterialTheme.typography.labelSmall,
                             color = Color.White.copy(alpha = 0.9f),
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
@@ -116,14 +123,14 @@ internal fun CardVisual(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 Text(
-                    text = "Card number",
+                    text = stringResource(Res.string.card_visual_number_label),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.White.copy(alpha = 0.72f),
                 )
                 AnimatedCardText(
                     text = displayValue(
                         value = cardNumber,
-                        fallback = "0000 0000 0000 0000",
+                        fallback = stringResource(Res.string.card_visual_number_fallback),
                     ),
                     style = MaterialTheme.typography.headlineMedium.copy(letterSpacing = 1.2.sp),
                     fontWeight = FontWeight.SemiBold,
@@ -141,24 +148,24 @@ internal fun CardVisual(
                     horizontalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
                     CardMetaBlock(
-                        label = "Cardholder",
+                        label = stringResource(Res.string.card_visual_holder_label),
                         value = displayValue(
                             value = holderName,
-                            fallback = "YOUR NAME",
+                            fallback = stringResource(Res.string.card_visual_holder_fallback),
                         ),
                         modifier = Modifier.weight(1.15f),
                     )
                     CardMetaBlock(
-                        label = "Expires",
+                        label = stringResource(Res.string.card_visual_expires_label),
                         value = displayValue(
                             value = expiryDate,
-                            fallback = "MM/YY",
+                            fallback = stringResource(Res.string.card_form_input_expiry_date_placeholder),
                         ),
                         modifier = Modifier.weight(0.7f),
                     )
                     CardMetaBlock(
-                        label = "CVV",
-                        value = "***",
+                        label = stringResource(Res.string.card_visual_cvv_label),
+                        value = stringResource(Res.string.card_form_input_cvv_placeholder),
                         modifier = Modifier.weight(0.45f),
                     )
                 }
@@ -292,12 +299,13 @@ private fun brandTint(cardType: CardType): Color {
     }
 }
 
+@Composable
 private fun cardTypeLabel(cardType: CardType): String {
     return when (cardType) {
-        CardType.VISA -> "VISA"
-        CardType.MASTERCARD -> "MASTERCARD"
-        CardType.MIR -> "MIR"
-        CardType.UNKNOWN -> "AUTO"
+        CardType.VISA -> stringResource(Res.string.card_visual_brand_visa)
+        CardType.MASTERCARD -> stringResource(Res.string.card_visual_brand_mastercard)
+        CardType.MIR -> stringResource(Res.string.card_visual_brand_mir)
+        CardType.UNKNOWN -> stringResource(Res.string.card_visual_brand_auto)
     }
 }
 
