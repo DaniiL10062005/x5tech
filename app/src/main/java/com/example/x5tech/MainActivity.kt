@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.x5tech.feature.cardform.BankCardFormScreen
@@ -26,6 +27,7 @@ internal class MainActivity : ComponentActivity() {
             X5techTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0)
                 ) { innerPadding ->
                     BankCardFormScreen(
                         viewModel = viewModel,
